@@ -6,26 +6,36 @@ from pydantic import EmailStr
 
 
 class Attachment:
-    def __init__(self, filename, filetype, blobname):
+    def __init__(self,
+          filename: str,
+          filetype: str,
+          blobname: str
+     ):
         self.filename = filename
         self.filetype = filetype
         self.blobname = blobname
 
 class Email:
     def __init__(
-            self,
-            receivers: List[EmailStr],
-            subject: str,
-            content: str,
-            attachments: List[Attachment] | None
-        ): 
-            self.__receivers = receivers
-            self.__subject = subject
-            self.__content = content
-            self.__attachments = attachments 
-            self.__timestamp = datetime.now()
-            self.__is_sent = False 
-        
+          self,
+          email_id: int,
+          receivers: List[EmailStr],
+          subject: str,
+          content: str,
+          attachments: List[Attachment] | None
+     ): 
+          self.__email_id = email_id
+          self.__receivers = receivers
+          self.__subject = subject
+          self.__content = content
+          self.__attachments = attachments 
+          self.__timestamp = datetime.now()
+          self.__is_sent = False 
+     
+    @property
+    def email_id(self) -> int:
+         return self.__email_id
+    
     @property
     def receivers(self) -> List[EmailStr]:
          return self.__receivers
@@ -49,6 +59,10 @@ class Email:
     @property
     def is_sent(self) -> bool:
          return self.__is_sent
+    
+    @email_id.setter
+    def email_id(self, email_id: int):
+         self.__email_id = email_id
     
     @attachments.setter
     def attachments(self, attachments: List[Attachment]):
