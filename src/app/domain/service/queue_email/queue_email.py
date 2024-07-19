@@ -1,4 +1,5 @@
 
+import asyncio
 from src.app.port.inward.queue_email.queue_email_command import QueueEmailCommand
 from src.app.port.inward.queue_email.queue_email_use_case import QueueEmailUseCase
 from src.app.port.outward.queuing_email.queuing_email_command import QueuingEmailCommand
@@ -15,34 +16,44 @@ class QueueEmailService(QueueEmailUseCase):
         self.__save_email_port = save_email_port
         self.__queuing_email_port = queuing_email_port
     
-    def queue_email(self, command: QueueEmailCommand):
-        # Save email to DB 
-        try:
-            save_command = SaveEmailCommand(
-                email_id = command.__email_id,
-                receivers = command.__receivers,
-                subject = command.__subject,
-                content = command.__content,
-                attachments = command.__attachments
-            )
-            self.__save_email_port.save_email(save_command)
+    async def queue_email(self, command: QueueEmailCommand):
+        save_command = SaveEmailCommand(
+            email_id = command.__email_id,
+            receivers = command.__receivers,
+            subject = command.__subject,
+            content = command.__content,
+            attachments = command.__attachments
+        )
+        queuing_command = QueuingEmailCommand(
+            receivers = command.__receivers,
+            subject = command.__subject,
+            content = command.__content,
+            attachments = command.__attachments
+        )
         
-        except EmailNotSavedError as error:
-            print(error.message)
-        
-        # Queue email
-        try:
-            queuing_command = QueuingEmailCommand(
-                receivers = command.__receivers,
-                subject = command.__subject,
-                content = command.__content,
-                attachments = command.__attachments
-            )
-            self.__queuing_email_port.queuing_email(queuing_command)
+        # Asynchronously save to DB and enqueue the email
+        results = await asyncio.gather(
+            self.__save_email_port.save_email(save_command),
+            self.__queuing_email_port.queuing_email(queuing_command),
+            return_exceptions = True
+        )
 
-        except QueuingError as error:
-            print(error.message)
-    
+        db_error = None
+        queue_error = None
+
+        for result in results:
+            if isinstance(result, EmailNotSavedError):
+                db_error = result
+            elif isinstance(result, QueuingError):
+                queue_error = result
+
+        if db_error and queue_error:
+            raise EmailSaveAndQueueError(db_error, queue_error)
+        elif db_error:
+            print(db_error.message)
+        elif queue_error:
+            print(queue_error.message)
+
 
 class EmailNotSavedError(Exception):
     def __init__(self, email_id):
@@ -55,4 +66,11 @@ class QueuingError(Exception):
     def __init__(self, email_id):
         self.email_id = email_id
         self.message = f"Email ID: {email_id} failed to send to the queue."
+        super().__init__(self.message)
+
+
+class EmailSaveAndQueueError(Exception):
+    def __init__(self, email_id):
+        self.email_id = email_id
+        self.message = f"Email ID: {email_id} failed to save to the database and send to the queue."
         super().__init__(self.message)

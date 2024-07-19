@@ -23,7 +23,7 @@ class SendEmailService(SendEmailUseCase):
                 content = command.__content,
                 attachments = command.__attachments
             )
-            result = self.__sending_email_port.sending_email(sending_command)
+            self.__sending_email_port.sending_email(sending_command)
         
         except EmailSendingError as error:
             print(error.message)
@@ -48,5 +48,5 @@ class EmailSendingError(Exception):
 
 class UpdateEmailStateError(Exception):
     def __init__(self):
-        self.message = f"Failed to update email state (is_sent = True) in the database."
+        self.message = f"Failed to update email state (is_sent = True)in the database."
         super().__init__(self.message)
