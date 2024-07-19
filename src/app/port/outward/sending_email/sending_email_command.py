@@ -1,13 +1,10 @@
-import os
 from typing import List
-from dotenv import load_dotenv
 from pydantic import EmailStr
 
 from src.app.domain.entity.email import Attachment
 
-load_dotenv()
 
-class ExecuteSendEmailCommand:
+class SendingEmailCommand:
     def __init__(self,
         receivers: List[EmailStr],
         subject: str,
