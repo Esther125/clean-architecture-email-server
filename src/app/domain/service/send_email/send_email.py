@@ -16,27 +16,37 @@ class SendEmailService(SendEmailUseCase):
 
     def send_email(self, command: SendEmailCommand):
         # Send email
-        sending_command = SendingEmailCommand(
-            receivers = command.__receivers,
-            subject = command.__subject,
-            content = command.__content,
-            attachments = command.__attachments
-        )
-        result = self.__sending_email_port.sending_email(sending_command)
+        try:
+            sending_command = SendingEmailCommand(
+                receivers = command.__receivers,
+                subject = command.__subject,
+                content = command.__content,
+                attachments = command.__attachments
+            )
+            result = self.__sending_email_port.sending_email(sending_command)
+        
+        except EmailSendingError as error:
+            print(error.message)
 
         # Update is_sent attribute if sent successfully
-        update_state_command = UpdateEmailStateCommand(
-            email_id = command.__email_id,
-            is_sent = True
-        )
-        
-        if result:
+        try:
+            update_state_command = UpdateEmailStateCommand(
+                email_id = command.__email_id,
+                is_sent = True
+            )
             self.__update_email_state_port.update_state(update_state_command)
-        else:
-            raise EmailNotSendError
-            
 
-class EmailNotSendError(Exception):
+        except UpdateEmailStateError as error:
+            print(error.message)
+
+
+class EmailSendingError(Exception):
     def __init__(self):
-        self.message = f"Failed to send email."
+        self.message = f"Failed to send the email."
+        super().__init__(self.message)
+
+
+class UpdateEmailStateError(Exception):
+    def __init__(self):
+        self.message = f"Failed to update email state (is_sent = True) in the database."
         super().__init__(self.message)
