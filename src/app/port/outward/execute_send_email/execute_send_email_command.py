@@ -14,8 +14,6 @@ class ExecuteSendEmailCommand:
         content: str,
         attachments: List[Attachment] | None
     ):
-        self.__sender = os.getenv("SENDER_EMAIL"),
-        self.__password = os.getenv("SENDER_PASSWORD"),
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
