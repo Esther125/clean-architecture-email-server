@@ -18,7 +18,7 @@ class Attachment:
 class Email:
     def __init__(
           self,
-          email_id: int,
+          email_id: str,
           receivers: List[EmailStr],
           subject: str,
           content: str,
@@ -33,7 +33,7 @@ class Email:
           self.__is_sent = False 
      
     @property
-    def email_id(self) -> int:
+    def email_id(self) -> str:
          return self.__email_id
     
     @property
@@ -59,10 +59,6 @@ class Email:
     @property
     def is_sent(self) -> bool:
          return self.__is_sent
-    
-    @email_id.setter
-    def email_id(self, email_id: int):
-         self.__email_id = email_id
     
     @attachments.setter
     def attachments(self, attachments: List[Attachment]):

@@ -8,7 +8,7 @@ from src.app.domain.entity.email import Attachment
 
 class SaveEmailCommand:
     def __init__(self,
-        email_id: int,
+        email_id: str,
         receivers: List[EmailStr],
         subject: str,
         content: str,
@@ -21,7 +21,7 @@ class SaveEmailCommand:
         self.__attachments = attachments
 
     @property
-    def email_id(self) -> int:
+    def email_id(self) -> str:
          return self.__email_id
     
     @property
