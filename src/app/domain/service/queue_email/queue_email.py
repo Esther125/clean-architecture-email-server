@@ -29,8 +29,8 @@ class QueueEmailService(QueueEmailUseCase):
         # Queue email
         queuing_command = QueuingEmailCommand(
             receivers = command.__receivers,
-            subject = command.subject,
-            content = command.content,
+            subject = command.__subject,
+            content = command.__content,
             attachments = command.__attachments
         )
         self.__queuing_email_port.queuing_email(queuing_command)
