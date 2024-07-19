@@ -16,14 +16,6 @@ class QueuingEmailCommand:
         self.__attachments = attachments
 
     @property
-    def sender(self) -> List[EmailStr]:
-         return self.__sender
-    
-    @property
-    def password(self) -> str:
-         return self.__password
-    
-    @property
     def receivers(self) -> List[EmailStr]:
          return self.__receivers
     
