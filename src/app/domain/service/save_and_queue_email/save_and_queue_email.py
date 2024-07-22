@@ -1,14 +1,14 @@
 
 import asyncio
-from src.app.port.inward.queue_email.queue_email_command import QueueEmailCommand
-from src.app.port.inward.queue_email.queue_email_use_case import QueueEmailUseCase
+from src.app.port.inward.save_and_queue_email.save_and_queue_email_command import SaveAndQueueEmailCommand
+from src.app.port.inward.save_and_queue_email.save_and_queue_email_use_case import SaveAndQueueEmailUseCase
 from src.app.port.outward.queuing_email.queuing_email_command import QueuingEmailCommand
 from src.app.port.outward.queuing_email.queuing_email_port import QueuingEmailPort
 from src.app.port.outward.save_email.save_email_command import SaveEmailCommand
 from src.app.port.outward.save_email.save_email_port import SaveEmailPort
 
 
-class QueueEmailService(QueueEmailUseCase):
+class SaveAndQueueEmailService(SaveAndQueueEmailUseCase):
     def __init__(self,
         save_email_port: SaveEmailPort,
         queuing_email_port: QueuingEmailPort
@@ -16,7 +16,7 @@ class QueueEmailService(QueueEmailUseCase):
         self.__save_email_port = save_email_port
         self.__queuing_email_port = queuing_email_port
     
-    async def queue_email(self, command: QueueEmailCommand):
+    async def save_and_queue_email(self, command: SaveAndQueueEmailCommand):
         # Asynchronously save to DB and enqueue the email
         results = await asyncio.gather(
             self.save_email,

@@ -19,28 +19,28 @@ class TestSendEmailService(TestCase):
             attachments = None
         )
 
-    def test_send_email_success(self):
+    def test_send_and_update_success(self):
         self.sending_email_port.sending_email.return_value = None
         self.update_email_state_port.update_state.return_value = None
 
-        self.service.send_email(self.command)
+        self.service.send_and_update_email_state(self.command)
 
         self.sending_email_port.sending_email.assert_called_once()
         self.update_email_state_port.update_state.assert_called_once()
     
-    def test_send_email_failure_on_send(self):
+    def test_send_and_update_failure_on_send(self):
         self.sending_email_port.sending_email.side_effect = EmailSendingError()
 
         with self.assertRaises(EmailSendingError):
-            self.service.send_email(self.command)
+            self.service.send_and_update_email_state(self.command)
         
         self.update_email_state_port.update_state.assert_not_called()
 
-    def test_send_email_failure_on_update_state(self):
+    def test_send_and_update_failure_on_update(self):
         self.sending_email_port.sending_email.return_value = None 
         self.update_email_state_port.update_state.side_effect = UpdateEmailStateError()
 
         with self.assertRaises(UpdateEmailStateError):
-            self.service.send_email(self.command)
+            self.service.send_and_update_email_state(self.command)
         
         self.sending_email_port.sending_email.assert_called_once()
