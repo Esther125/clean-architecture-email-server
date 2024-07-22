@@ -28,19 +28,19 @@ class TestQueueEmailService(IsolatedAsyncioTestCase):
         self.save_email_port.save_email.assert_called_once()
         self.queuing_email_port.queuing_email.assert_called_once()
 
-    async def test_queue_email_fail_to_save_email(self):
+    async def test_queue_email_failure_on_save(self):
         self.save_email_port.save_email.side_effect = EmailNotSavedError(email_id="1")
 
         with self.assertRaises(EmailNotSavedError):
             await self.service.queue_email(self.command)
 
-    async def test_queue_email_fail_to_queue_email(self):
+    async def test_queue_email_failure_on_queue(self):
         self.queuing_email_port.queuing_email.side_effect = QueuingError(email_id="1")
         
         with self.assertRaises(QueuingError):
             await self.service.queue_email(self.command)
 
-    async def test_queue_email_both_failed(self):
+    async def test_queue_email_failure_on_both(self):
         self.save_email_port.save_email.side_effect = EmailNotSavedError(email_id="1")
         self.queuing_email_port.queuing_email.side_effect = QueuingError(email_id="1")
         
