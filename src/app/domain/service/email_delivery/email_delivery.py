@@ -1,29 +1,29 @@
 
-from src.app.port.inward.send_and_update_email_state.send_and_update_email_state_command import SendAndUpdateEmailStateCommand
-from src.app.port.inward.send_and_update_email_state.send_and_update_email_state_use_case import SendAndUpdateEmailStateUseCase
-from src.app.port.outward.sending_email.sending_email_command import SendingEmailCommand
-from src.app.port.outward.sending_email.sending_email_port import SendingEmailPort
+from src.app.port.inward.email_delivery.email_delivery_command import EmailDeliveryCommand
+from src.app.port.inward.email_delivery.email_delivery_use_case import EmailDeliveryUseCase
+from src.app.port.outward.send_email.send_email_command import SendEmailCommand
+from src.app.port.outward.send_email.send_email_port import SendEmailPort
 from src.app.port.outward.update_email_state.update_email_state_command import UpdateEmailStateCommand
 from src.app.port.outward.update_email_state.update_email_state_port import UpdateEmailStatePort
 
-class SendAndUpdateEmailStateService(SendAndUpdateEmailStateUseCase):
+class EmailDeliveryService(EmailDeliveryUseCase):
     def __init__(self,
-        sending_email_port: SendingEmailPort,
+        send_email_port: SendEmailPort,
         update_email_state_port: UpdateEmailStatePort
     ):
-        self.__sending_email_port = sending_email_port
+        self.__send_email_port = send_email_port
         self.__update_email_state_port = update_email_state_port
 
-    def send_and_update_email_state(self, command: SendAndUpdateEmailStateCommand):
+    def send_and_update_email_state(self, command: EmailDeliveryCommand):
         # Send email
         try:
-            sending_command = SendingEmailCommand(
+            sending_command = SendEmailCommand(
                 receivers = command.receivers,
                 subject = command.subject,
                 content = command.content,
                 attachments = command.attachments
             )
-            self.__sending_email_port.sending_email(sending_command)
+            self.__send_email_port.send_email(sending_command)
         
         except EmailSendingError:
             raise

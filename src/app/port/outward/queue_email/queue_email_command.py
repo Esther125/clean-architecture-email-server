@@ -3,8 +3,7 @@ from pydantic import EmailStr
 
 from src.app.domain.entity.email import Attachment
 
-
-class SendingEmailCommand:
+class QueueEmailCommand:
     def __init__(self,
         receivers: List[EmailStr],
         subject: str,
@@ -16,14 +15,6 @@ class SendingEmailCommand:
         self.__content = content
         self.__attachments = attachments
 
-    @property
-    def sender(self) -> List[EmailStr]:
-         return self.__sender
-    
-    @property
-    def password(self) -> str:
-         return self.__password
-    
     @property
     def receivers(self) -> List[EmailStr]:
          return self.__receivers

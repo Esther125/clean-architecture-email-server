@@ -1,12 +1,10 @@
-
 from typing import List
-
 from pydantic import EmailStr
 
 from src.app.domain.entity.email import Attachment
 
 
-class SaveAndQueueEmailCommand:
+class EmailDeliveryCommand:
     def __init__(
         self, 
         email_id: str,
@@ -20,7 +18,7 @@ class SaveAndQueueEmailCommand:
         self.__subject = subject
         self.__content = content
         self.__attachments = attachments
-
+    
     @property
     def email_id(self) -> str:
          return self.__email_id

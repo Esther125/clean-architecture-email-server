@@ -1,23 +1,23 @@
 
 import asyncio
-from src.app.port.inward.save_and_queue_email.save_and_queue_email_command import SaveAndQueueEmailCommand
-from src.app.port.inward.save_and_queue_email.save_and_queue_email_use_case import SaveAndQueueEmailUseCase
-from src.app.port.outward.queuing_email.queuing_email_command import QueuingEmailCommand
-from src.app.port.outward.queuing_email.queuing_email_port import QueuingEmailPort
+from src.app.port.inward.email_dispatch.email_dispatch_command import EmailDispatchCommand
+from src.app.port.inward.email_dispatch.email_dispatch_use_case import EmailDispatchUseCase
+from src.app.port.outward.queue_email.queue_email_command import QueueEmailCommand
+from src.app.port.outward.queue_email.queue_email_port import QueueEmailPort
 from src.app.port.outward.save_email.save_email_command import SaveEmailCommand
 from src.app.port.outward.save_email.save_email_port import SaveEmailPort
 
 
-class SaveAndQueueEmailService(SaveAndQueueEmailUseCase):
+class EmailDispatchService(EmailDispatchUseCase):
     def __init__(self,
         save_email_port: SaveEmailPort,
-        queuing_email_port: QueuingEmailPort
+        queue_email_port: QueueEmailPort
     ):
         self.__save_email_port = save_email_port
-        self.__queuing_email_port = queuing_email_port
+        self.__queue_email_port = queue_email_port
     
-    async def save_and_queue_email(self, command: SaveAndQueueEmailCommand):
-        # Asynchronously save to DB and enqueue the email
+    async def dispatch_email(self, command: EmailDispatchCommand):
+        # Asynchronously save the email to DB and enqueue the email
         results = await asyncio.gather(
             self.save_email,
             self.queue_email,
@@ -40,7 +40,7 @@ class SaveAndQueueEmailService(SaveAndQueueEmailUseCase):
         elif queue_error:
             raise QueuingError(command.email_id)
 
-    async def save_email(self,command: QueueEmailCommand):
+    async def save_email(self,command: EmailDispatchCommand):
         try:
             save_command = SaveEmailCommand(
                 email_id = command.email_id,
@@ -54,15 +54,15 @@ class SaveAndQueueEmailService(SaveAndQueueEmailUseCase):
         except EmailNotSavedError:
             raise
 
-    async def queue_email(self,command: QueueEmailCommand):
+    async def queue_email(self,command: EmailDispatchCommand):
         try:
-            queuing_command = QueuingEmailCommand(
+            queue_command = QueueEmailCommand(
                 receivers = command.receivers,
                 subject = command.subject,
                 content = command.content,
                 attachments = command.attachments
             )
-            self.__queuing_email_port.queuing_email(queuing_command),
+            self.__queue_email_port.queue_email(queue_command),
 
         except QueuingError:
             raise
