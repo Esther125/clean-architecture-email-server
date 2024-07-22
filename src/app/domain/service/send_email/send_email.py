@@ -18,27 +18,26 @@ class SendEmailService(SendEmailUseCase):
         # Send email
         try:
             sending_command = SendingEmailCommand(
-                receivers = command.__receivers,
-                subject = command.__subject,
-                content = command.__content,
-                attachments = command.__attachments
+                receivers = command.receivers,
+                subject = command.subject,
+                content = command.content,
+                attachments = command.attachments
             )
             self.__sending_email_port.sending_email(sending_command)
         
         except EmailSendingError as error:
-            print(error.message)
+            raise
 
         # Update is_sent attribute if sent successfully
         try:
             update_state_command = UpdateEmailStateCommand(
-                email_id = command.__email_id,
+                email_id = command.email_id,
                 is_sent = True
             )
             self.__update_email_state_port.update_state(update_state_command)
 
         except UpdateEmailStateError as error:
-            print(error.message)
-
+            raise
 
 class EmailSendingError(Exception):
     def __init__(self):
