@@ -18,17 +18,17 @@ class QueueEmailService(QueueEmailUseCase):
     
     async def queue_email(self, command: QueueEmailCommand):
         save_command = SaveEmailCommand(
-            email_id = command.__email_id,
-            receivers = command.__receivers,
-            subject = command.__subject,
-            content = command.__content,
-            attachments = command.__attachments
+            email_id = command.email_id,
+            receivers = command.receivers,
+            subject = command.subject,
+            content = command.content,
+            attachments = command.attachments
         )
         queuing_command = QueuingEmailCommand(
-            receivers = command.__receivers,
-            subject = command.__subject,
-            content = command.__content,
-            attachments = command.__attachments
+            receivers = command.receivers,
+            subject = command.subject,
+            content = command.content,
+            attachments = command.attachments
         )
         
         # Asynchronously save to DB and enqueue the email
@@ -48,11 +48,11 @@ class QueueEmailService(QueueEmailUseCase):
                 queue_error = result
 
         if db_error and queue_error:
-            raise EmailSaveAndQueueError(db_error, queue_error)
+            raise EmailSaveAndQueueError(command.email_id)
         elif db_error:
-            print(db_error.message)
+            raise EmailNotSavedError(command.email_id)
         elif queue_error:
-            print(queue_error.message)
+            raise QueuingError(command.email_id)
 
 
 class EmailNotSavedError(Exception):
