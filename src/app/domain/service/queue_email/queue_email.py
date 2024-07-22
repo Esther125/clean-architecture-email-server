@@ -17,24 +17,10 @@ class QueueEmailService(QueueEmailUseCase):
         self.__queuing_email_port = queuing_email_port
     
     async def queue_email(self, command: QueueEmailCommand):
-        save_command = SaveEmailCommand(
-            email_id = command.email_id,
-            receivers = command.receivers,
-            subject = command.subject,
-            content = command.content,
-            attachments = command.attachments
-        )
-        queuing_command = QueuingEmailCommand(
-            receivers = command.receivers,
-            subject = command.subject,
-            content = command.content,
-            attachments = command.attachments
-        )
-        
         # Asynchronously save to DB and enqueue the email
         results = await asyncio.gather(
-            self.__save_email_port.save_email(save_command),
-            self.__queuing_email_port.queuing_email(queuing_command),
+            self.save_email,
+            self.queue_email,
             return_exceptions = True
         )
 
@@ -53,6 +39,33 @@ class QueueEmailService(QueueEmailUseCase):
             raise EmailNotSavedError(command.email_id)
         elif queue_error:
             raise QueuingError(command.email_id)
+
+    async def save_email(self,command: QueueEmailCommand):
+        try:
+            save_command = SaveEmailCommand(
+                email_id = command.email_id,
+                receivers = command.receivers,
+                subject = command.subject,
+                content = command.content,
+                attachments = command.attachments
+            )
+            self.__save_email_port.save_email(save_command)
+        
+        except EmailNotSavedError:
+            raise
+
+    async def queue_email(self,command: QueueEmailCommand):
+        try:
+            queuing_command = QueuingEmailCommand(
+                receivers = command.receivers,
+                subject = command.subject,
+                content = command.content,
+                attachments = command.attachments
+            )
+            self.__queuing_email_port.queuing_email(queuing_command),
+
+        except QueuingError:
+            raise
 
 
 class EmailNotSavedError(Exception):
