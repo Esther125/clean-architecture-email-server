@@ -46,4 +46,3 @@ class TestQueueEmailService(IsolatedAsyncioTestCase):
         
         with self.assertRaises(EmailSaveAndQueueError):
             await self.service.queue_email(self.command)
-

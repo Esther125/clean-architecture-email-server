@@ -44,7 +44,3 @@ class TestSendEmailService(TestCase):
             self.service.send_email(self.command)
         
         self.sending_email_port.sending_email.assert_called_once()
-
-
-
-        
