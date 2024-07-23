@@ -39,11 +39,3 @@ class SaveEmailCommand:
     @property
     def attachments(self) -> List[Attachment]:
          return self.__attachments
-    
-    @email_id.setter
-    def email_id(self,email_id: int):
-         self.email_id = email_id
-         
-    @attachments.setter
-    def attachments(self, attachments: List[Attachment]):
-         self.__attachments = attachments

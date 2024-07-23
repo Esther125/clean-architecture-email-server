@@ -39,7 +39,3 @@ class SendEmailCommand:
     @property
     def attachments(self) -> List[Attachment]:
          return self.__attachments
-    
-    @attachments.setter
-    def attachments(self, attachments: List[Attachment]):
-         self.__attachments = attachments

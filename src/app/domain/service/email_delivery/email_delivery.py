@@ -8,36 +8,47 @@ from src.app.port.outward.update_email_state.update_email_state_port import Upda
 
 class EmailDeliveryService(EmailDeliveryUseCase):
     def __init__(self,
-        send_email_port: SendEmailPort,
-        update_email_state_port: UpdateEmailStatePort
+        send_email_adapter: SendEmailPort,
+        update_email_state_adapter: UpdateEmailStatePort
     ):
-        self.__send_email_port = send_email_port
-        self.__update_email_state_port = update_email_state_port
+        self.__send_email_adapter = send_email_adapter
+        self.__update_email_state_adapter = update_email_state_adapter
 
     async def deliver_email(self, command: EmailDeliveryCommand):
-        # Send email
         try:
-            sending_command = SendEmailCommand(
-                receivers = command.receivers,
-                subject = command.subject,
-                content = command.content,
-                attachments = command.attachments
-            )
-            await self.__send_email_port.send_email(sending_command)
+            await self.send_email(command)
+            await self.update_email_state(command)
+            success = True  
+        except Exception as err:
+            print(f"Error delivering email with ID {command.email_id}: {err}")
+            success = False  
+        return success
         
-        except EmailSendingError as err:
+    async def send_email(self, command: EmailDeliveryCommand):
+        sending_command = SendEmailCommand(
+            receivers = command.receivers,
+            subject = command.subject,
+            content = command.content,
+            attachments = command.attachments
+        )
+        try:
+            await self.__send_email_adapter.send_email(sending_command)
+        
+        except Exception as err:
             raise EmailSendingError(command.email_id) from err
 
-        # Update is_sent attribute if sent successfully
+    async def update_email_state(self, command: EmailDeliveryCommand):
+        # Update `is_sent` attribute if sent successfully
+        update_state_command = UpdateEmailStateCommand(
+            email_id = command.email_id,
+            is_sent = True
+        )
         try:
-            update_state_command = UpdateEmailStateCommand(
-                email_id = command.email_id,
-                is_sent = True
-            )
-            await self.__update_email_state_port.update_state(update_state_command)
+            await self.__update_email_state_adapter.update_state(update_state_command)
 
-        except UpdateEmailStateError as err:
+        except Exception as err:
             raise UpdateEmailStateError(command.email_id) from err
+
 
 class EmailSendingError(Exception):
     def __init__(self, email_id):
