@@ -38,7 +38,7 @@ class EmailDeliveryService(EmailDeliveryUseCase):
             raise EmailSendingError(command.email_id) from err
 
     async def update_email_state(self, command: EmailDeliveryCommand):
-        # Update `is_sent` attribute if sent successfully
+        # Update `is_sent` attribute to True if sent successfully
         update_state_command = UpdateEmailStateCommand(
             email_id = command.email_id,
             is_sent = True
