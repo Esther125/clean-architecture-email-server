@@ -6,15 +6,21 @@ from src.app.domain.entity.email import Attachment
 
 class SendEmailCommand:
     def __init__(self,
+        email_id: str,
         receivers: List[EmailStr],
         subject: str,
         content: str,
         attachments: List[Attachment] | None
     ):
+        self.__email_id = email_id
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
         self.__attachments = attachments
+
+    @property
+    def email_id(self) -> str:
+         return self.__email_id
 
     @property
     def sender(self) -> List[EmailStr]:
