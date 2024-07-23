@@ -19,9 +19,9 @@ class EmailDeliveryService(EmailDeliveryUseCase):
             await self.send_email(command)
             await self.update_email_state(command)
             success = True  
-        except Exception as err:
-            print(f"Error delivering email with ID {command.email_id}: {err}")
+        except Exception:
             success = False  
+            raise 
         return success
         
     async def send_email(self, command: EmailDeliveryCommand):
