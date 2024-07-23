@@ -14,7 +14,7 @@ class EmailDeliveryService(EmailDeliveryUseCase):
         self.__send_email_port = send_email_port
         self.__update_email_state_port = update_email_state_port
 
-    def send_and_update_email_state(self, command: EmailDeliveryCommand):
+    async def deliver_email(self, command: EmailDeliveryCommand):
         # Send email
         try:
             sending_command = SendEmailCommand(
@@ -23,10 +23,10 @@ class EmailDeliveryService(EmailDeliveryUseCase):
                 content = command.content,
                 attachments = command.attachments
             )
-            self.__send_email_port.send_email(sending_command)
+            await self.__send_email_port.send_email(sending_command)
         
-        except EmailSendingError:
-            raise
+        except EmailSendingError as err:
+            raise EmailSendingError(command.email_id) from err
 
         # Update is_sent attribute if sent successfully
         try:
@@ -34,18 +34,20 @@ class EmailDeliveryService(EmailDeliveryUseCase):
                 email_id = command.email_id,
                 is_sent = True
             )
-            self.__update_email_state_port.update_state(update_state_command)
+            await self.__update_email_state_port.update_state(update_state_command)
 
-        except UpdateEmailStateError:
-            raise
+        except UpdateEmailStateError as err:
+            raise UpdateEmailStateError(command.email_id) from err
 
 class EmailSendingError(Exception):
-    def __init__(self):
-        self.message = f"Failed to send the email."
+    def __init__(self, email_id):
+        self.email_id = email_id
+        self.message = f"Failed to send the email with ID {email_id}."
         super().__init__(self.message)
 
 
 class UpdateEmailStateError(Exception):
-    def __init__(self):
-        self.message = f"Failed to update email state (is_sent = True)in the database."
+    def __init__(self, email_id):
+        self.email_id = email_id
+        self.message = f"Failed to update email state (is_sent = True) in the database with ID {email_id}."
         super().__init__(self.message)

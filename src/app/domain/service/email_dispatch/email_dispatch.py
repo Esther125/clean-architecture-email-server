@@ -19,8 +19,8 @@ class EmailDispatchService(EmailDispatchUseCase):
     async def dispatch_email(self, command: EmailDispatchCommand):
         # Asynchronously save the email to DB and enqueue the email
         results = await asyncio.gather(
-            self.save_email,
-            self.queue_email,
+            self.save_email(command),
+            self.queue_email(command),
             return_exceptions = True
         )
 
@@ -34,12 +34,12 @@ class EmailDispatchService(EmailDispatchUseCase):
                 queue_error = result
 
         if db_error and queue_error:
-            raise EmailSaveAndQueueError(command.email_id)
+            raise EmailSaveAndQueueError(command.email_id, db_error, queue_error)
         elif db_error:
-            raise EmailNotSavedError(command.email_id)
+            raise db_error  
         elif queue_error:
-            raise QueuingError(command.email_id)
-
+            raise queue_error  
+        
     async def save_email(self,command: EmailDispatchCommand):
         try:
             save_command = SaveEmailCommand(
@@ -49,10 +49,10 @@ class EmailDispatchService(EmailDispatchUseCase):
                 content = command.content,
                 attachments = command.attachments
             )
-            self.__save_email_port.save_email(save_command)
+            await self.__save_email_port.save_email(save_command)
         
-        except EmailNotSavedError:
-            raise
+        except Exception as err:
+            raise EmailNotSavedError(command.email_id) from err
 
     async def queue_email(self,command: EmailDispatchCommand):
         try:
@@ -62,10 +62,10 @@ class EmailDispatchService(EmailDispatchUseCase):
                 content = command.content,
                 attachments = command.attachments
             )
-            self.__queue_email_port.queue_email(queue_command),
+            await self.__queue_email_port.queue_email(queue_command)
 
-        except QueuingError:
-            raise
+        except Exception as err:
+            raise QueuingError(command.email_id) from err
 
 
 class EmailNotSavedError(Exception):
@@ -83,7 +83,9 @@ class QueuingError(Exception):
 
 
 class EmailSaveAndQueueError(Exception):
-    def __init__(self, email_id):
+    def __init__(self, email_id, db_error, queue_error):
         self.email_id = email_id
-        self.message = f"Email ID: {email_id} failed to save to the database and send to the queue."
+        self.db_error = db_error
+        self.queue_error = queue_error
+        self.message = f"Email ID: {email_id} failed to save to the database and send to the queue. DB Error: {db_error}, Queue Error: {queue_error}"
         super().__init__(self.message)
