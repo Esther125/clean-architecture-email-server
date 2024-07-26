@@ -9,28 +9,27 @@ from src.app.port.outward.save_email.save_email_port import SaveEmailPort
 
 
 class MockSaveEmailAdapter(SaveEmailPort):
-    def __init__(self, raise_exception = False):
-        self.raise_exception = raise_exception
-
     async def save_email(self, command: SaveEmailCommand):
-        if self.raise_exception:
-            raise Exception()
+        pass
+
+
+class MockSaveEmailAdapterWithError(SaveEmailPort):
+    async def save_email(self, command: SaveEmailCommand):
+        raise Exception()
 
 
 class MockQueueEmailAdapter(QueueEmailPort):
-    def __init__(self, raise_exception = False):
-        self.raise_exception = raise_exception
-
     async def queue_email(self, command: QueueEmailCommand):
-        if self.raise_exception:
-            raise Exception()
+        pass
 
     
+class MockQueueEmailAdapterWithError(QueueEmailPort):
+    async def queue_email(self, command: QueueEmailCommand):
+        raise Exception()
+    
+
 class TestEmailDispatchService(IsolatedAsyncioTestCase):
     def setUp(self):
-        self.save_email_adapter = MockSaveEmailAdapter()
-        self.queue_email_adapter = MockQueueEmailAdapter()
-        self.service = EmailDispatchService(self.save_email_adapter, self.queue_email_adapter)
         self.command = EmailDispatchCommand(
             email_id = "1",
             receivers = ["test@example.com"],
@@ -40,21 +39,29 @@ class TestEmailDispatchService(IsolatedAsyncioTestCase):
         )
 
     async def test_email_dispatch_success(self):
-        success = await self.service.dispatch_email(self.command)
+        save_email_adapter = MockSaveEmailAdapter()
+        queue_email_adapter = MockQueueEmailAdapter()
+        service = EmailDispatchService(save_email_adapter, queue_email_adapter)
+        success = await service.dispatch_email(self.command)
         self.assertTrue(success, "Email dispatch should succeed")
 
     async def test_email_dispatch_failure_on_save(self):
-        self.save_email_adapter.raise_exception = True
+        save_email_adapter_with_error = MockSaveEmailAdapterWithError()
+        queue_email_adapter = MockQueueEmailAdapter()
+        service = EmailDispatchService(save_email_adapter_with_error, queue_email_adapter)
         with self.assertRaises(EmailNotSavedError):
-            await self.service.dispatch_email(self.command)
+            await service.dispatch_email(self.command)
 
     async def test_email_dispatch_failure_on_queue(self): 
-        self.queue_email_adapter.raise_exception = True
+        save_email_adapter = MockSaveEmailAdapter()
+        queue_email_adapter_with_error = MockQueueEmailAdapterWithError()
+        service = EmailDispatchService(save_email_adapter, queue_email_adapter_with_error)
         with self.assertRaises(QueuingError):
-            await self.service.dispatch_email(self.command)
+            await service.dispatch_email(self.command)
 
     async def test_email_dispatch_failure_on_both(self):
-        self.save_email_adapter.raise_exception = True
-        self.queue_email_adapter.raise_exception = True
+        save_email_adapter_with_error = MockSaveEmailAdapterWithError()
+        queue_email_adapter_with_error = MockQueueEmailAdapterWithError()
+        service = EmailDispatchService(save_email_adapter_with_error, queue_email_adapter_with_error)
         with self.assertRaises(EmailSaveAndQueueError):
-            await self.service.dispatch_email(self.command)
+            await service.dispatch_email(self.command)

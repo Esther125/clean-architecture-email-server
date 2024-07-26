@@ -33,7 +33,7 @@ class EmailDispatchService(EmailDispatchUseCase):
                 db_error = result
             elif isinstance(result, QueuingError):
                 queue_error = result
-
+        print()
         if db_error and queue_error:
             raise EmailSaveAndQueueError(command.email_id, db_error, queue_error)
         elif db_error:
