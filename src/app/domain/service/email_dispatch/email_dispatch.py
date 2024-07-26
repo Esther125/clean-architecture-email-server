@@ -60,6 +60,7 @@ class EmailDispatchService(EmailDispatchUseCase):
 
     async def queue_email(self,command: EmailDispatchCommand):
         queue_command = QueueEmailCommand(
+            email_id = command.email_id,
             receivers = command.receivers,
             subject = command.subject,
             content = command.content,
