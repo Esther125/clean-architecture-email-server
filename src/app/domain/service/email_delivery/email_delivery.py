@@ -26,6 +26,7 @@ class EmailDeliveryService(EmailDeliveryUseCase):
         
     async def send_email(self, command: EmailDeliveryCommand):
         sending_command = SendEmailCommand(
+            email_id = command.email_id,
             receivers = command.receivers,
             subject = command.subject,
             content = command.content,

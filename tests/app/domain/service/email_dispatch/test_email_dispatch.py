@@ -13,16 +13,16 @@ class MockSaveEmailAdapter(SaveEmailPort):
         pass
 
 
+class MockQueueEmailAdapter(QueueEmailPort):
+    async def queue_email(self, command: QueueEmailCommand):
+        pass
+
+
 class MockSaveEmailAdapterWithError(SaveEmailPort):
     async def save_email(self, command: SaveEmailCommand):
         raise Exception()
 
 
-class MockQueueEmailAdapter(QueueEmailPort):
-    async def queue_email(self, command: QueueEmailCommand):
-        pass
-
-    
 class MockQueueEmailAdapterWithError(QueueEmailPort):
     async def queue_email(self, command: QueueEmailCommand):
         raise Exception()
