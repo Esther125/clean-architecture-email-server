@@ -21,7 +21,7 @@ class EmailDeliveryService(EmailDeliveryUseCase):
             await self.send_email(command)
         except Exception as send_error:
             raise EmailNotSentError(command.email_id, send_error) 
-        
+ 
         try:
             await self.update_email_state(command)
             success = True  

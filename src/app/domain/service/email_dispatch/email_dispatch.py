@@ -68,7 +68,7 @@ class EmailNotSavedError(Exception):
         self.message = f"Email ID: {email_id} failed to be saved. DB Error: {db_error}"
         super().__init__(self.message)
 
-
+ 
 class EmailNotQueuedError(Exception):
     def __init__(self, email_id, queue_error):
         self.email_id = email_id
