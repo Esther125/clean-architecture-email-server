@@ -25,21 +25,15 @@ class EmailDispatchService(EmailDispatchUseCase):
             return_exceptions = True
         )
 
-        db_error = None
-        queue_error = None
+        db_error = results[0]
+        queue_error = results[1]
 
-        for result in results:
-            if isinstance(result, EmailNotSavedError):
-                db_error = result
-            elif isinstance(result, QueuingError):
-                queue_error = result
-        print()
         if db_error and queue_error:
             raise EmailSaveAndQueueError(command.email_id, db_error, queue_error)
         elif db_error:
-            raise db_error  
+            raise EmailNotSavedError(command.email_id, db_error)
         elif queue_error:
-            raise queue_error  
+            raise EmailNotQueuedError(command.email_id, queue_error) 
         else:
             success = True
         return success
@@ -52,11 +46,8 @@ class EmailDispatchService(EmailDispatchUseCase):
             content = command.content,
             attachments = command.attachments
         )
-        try:
-            await self.__save_email_adapter.save_email(save_command)
-        
-        except Exception as err:
-            raise EmailNotSavedError(command.email_id) from err
+        result = await self.__save_email_adapter.save_email(save_command)
+        return result
 
     async def queue_email(self,command: EmailDispatchCommand):
         queue_command = QueueEmailCommand(
@@ -66,24 +57,23 @@ class EmailDispatchService(EmailDispatchUseCase):
             content = command.content,
             attachments = command.attachments
         )
-        try:
-            await self.__queue_email_adapter.queue_email(queue_command)
-
-        except Exception as err:
-            raise QueuingError(command.email_id) from err
+        result = await self.__queue_email_adapter.queue_email(queue_command)
+        return result
 
 
 class EmailNotSavedError(Exception):
-    def __init__(self, email_id):
+    def __init__(self, email_id, db_error):
         self.email_id = email_id
-        self.message = f"Email ID: {email_id} failed to save to the database."
+        self.db_error = db_error
+        self.message = f"Email ID: {email_id} failed to be saved. DB Error: {db_error}"
         super().__init__(self.message)
 
 
-class QueuingError(Exception):
-    def __init__(self, email_id):
+class EmailNotQueuedError(Exception):
+    def __init__(self, email_id, queue_error):
         self.email_id = email_id
-        self.message = f"Email ID: {email_id} failed to send to the queue."
+        self.queue_error = queue_error
+        self.message = f"Email ID: {email_id} failed to be queued. Queue Error: {queue_error}"
         super().__init__(self.message)
 
 
@@ -92,5 +82,5 @@ class EmailSaveAndQueueError(Exception):
         self.email_id = email_id
         self.db_error = db_error
         self.queue_error = queue_error
-        self.message = f"Email ID: {email_id} failed to save to the database and send to the queue. DB Error: {db_error}, Queue Error: {queue_error}"
+        self.message = f"Email ID: {email_id} failed to be saved and queued. DB Error: {db_error}, Queue Error: {queue_error}"
         super().__init__(self.message)

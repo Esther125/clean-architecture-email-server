@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from src.app.domain.service.email_dispatch.email_dispatch import EmailDispatchService, EmailNotSavedError, EmailSaveAndQueueError, QueuingError
+from src.app.domain.service.email_dispatch.email_dispatch import EmailDispatchService, EmailNotQueuedError, EmailNotSavedError, EmailSaveAndQueueError
 from src.app.port.inward.email_dispatch.email_dispatch_command import EmailDispatchCommand
 from src.app.port.outward.queue_email.queue_email_command import QueueEmailCommand
 from src.app.port.outward.queue_email.queue_email_port import QueueEmailPort
@@ -56,7 +56,7 @@ class TestEmailDispatchService(IsolatedAsyncioTestCase):
         save_email_adapter = MockSaveEmailAdapter()
         queue_email_adapter_with_error = MockQueueEmailAdapterWithError()
         service = EmailDispatchService(save_email_adapter, queue_email_adapter_with_error)
-        with self.assertRaises(QueuingError):
+        with self.assertRaises(EmailNotQueuedError):
             await service.dispatch_email(self.command)
 
     async def test_email_dispatch_failure_on_both(self):

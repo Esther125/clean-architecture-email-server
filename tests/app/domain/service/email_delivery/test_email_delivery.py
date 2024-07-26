@@ -1,7 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import Mock
 
-from src.app.domain.service.email_delivery.email_delivery import EmailDeliveryService, EmailSendingError, UpdateEmailStateError
+from src.app.domain.service.email_delivery.email_delivery import EmailDeliveryService, EmailNotSentError, EmailStateNotUpdatedError
 from src.app.port.inward.email_delivery.email_delivery_command import EmailDeliveryCommand
 from src.app.port.outward.send_email.send_email_command import SendEmailCommand
 from src.app.port.outward.send_email.send_email_port import SendEmailPort
@@ -50,13 +49,13 @@ class TestEmailDeliveryService(IsolatedAsyncioTestCase):
         send_email_adapter_with_error = SendEmailAdapterWithError()
         update_email_state_adapter = UpdateEmailStateAdapter()
         service = EmailDeliveryService(send_email_adapter_with_error, update_email_state_adapter)
-        with self.assertRaises(EmailSendingError):
+        with self.assertRaises(EmailNotSentError):
             await service.deliver_email(self.command)
         
     async def test_email_delivery_failure_on_update(self):
         send_email_adapter = SendEmailAdapter()
         update_email_state_adapter_with_error = UpdateEmailStateAdapterWithError()
         service = EmailDeliveryService(send_email_adapter, update_email_state_adapter_with_error)
-        with self.assertRaises(UpdateEmailStateError):
+        with self.assertRaises(EmailStateNotUpdatedError):
             await service.deliver_email(self.command)
     
