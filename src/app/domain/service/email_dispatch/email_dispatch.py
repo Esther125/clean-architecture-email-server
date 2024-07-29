@@ -46,8 +46,7 @@ class EmailDispatchService(EmailDispatchUseCase):
             content = command.content,
             attachments = command.attachments
         )
-        result = await self.__save_email_adapter.save_email(save_command)
-        return result
+        await self.__save_email_adapter.save_email(save_command)
 
     async def queue_email(self,command: EmailDispatchCommand):
         queue_command = QueueEmailCommand(
@@ -57,8 +56,7 @@ class EmailDispatchService(EmailDispatchUseCase):
             content = command.content,
             attachments = command.attachments
         )
-        result = await self.__queue_email_adapter.queue_email(queue_command)
-        return result
+        await self.__queue_email_adapter.queue_email(queue_command)
 
 
 class EmailNotSavedError(Exception):

@@ -38,8 +38,7 @@ class EmailDeliveryService(EmailDeliveryUseCase):
             content = command.content,
             attachments = command.attachments
         )
-        result = await self.__send_email_adapter.send_email(send_command)
-        return result
+        await self.__send_email_adapter.send_email(send_command)
     
     async def update_email_state(self, command: EmailDeliveryCommand):
         # Update `is_sent` attribute to True if sent successfully
@@ -47,8 +46,7 @@ class EmailDeliveryService(EmailDeliveryUseCase):
             email_id = command.email_id,
             is_sent = True
         )   
-        result = await self.__update_email_state_adapter.update_state(update_state_command)
-        return result
+        await self.__update_email_state_adapter.update_state(update_state_command)
 
 
 class EmailNotSentError(Exception):
