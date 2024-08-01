@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import EmailStr
 
 from src.app.domain.entity.email import Attachment
@@ -10,26 +10,18 @@ class SendEmailCommand:
         receivers: List[EmailStr],
         subject: str,
         content: str,
-        attachments: List[Attachment] | None
+        attachments: Optional[List[Attachment]] = None
     ):
         self.__email_id = email_id
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
-        self.__attachments = attachments
+        self.__attachments = attachments or []
 
     @property
     def email_id(self) -> str:
          return self.__email_id
 
-    @property
-    def sender(self) -> List[EmailStr]:
-         return self.__sender
-    
-    @property
-    def password(self) -> str:
-         return self.__password
-    
     @property
     def receivers(self) -> List[EmailStr]:
          return self.__receivers

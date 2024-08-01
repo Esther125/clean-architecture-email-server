@@ -1,5 +1,5 @@
 
-from typing import List
+from typing import List, Optional
 
 from pydantic import EmailStr
 
@@ -13,13 +13,13 @@ class QueueAndSaveEmailCommand:
         receivers: List[EmailStr],
         subject: str,
         content: str,
-        attachments: List[Attachment] | None
+        attachments: Optional[List[Attachment]] = None
     ):
         self.__email_id = email_id
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
-        self.__attachments = attachments
+        self.__attachments = attachments or []
 
     @property
     def email_id(self) -> str:

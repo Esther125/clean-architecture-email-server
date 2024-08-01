@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import EmailStr
 
@@ -22,13 +22,13 @@ class Email:
           receivers: List[EmailStr],
           subject: str,
           content: str,
-          attachments: List[Attachment] | None
+          attachments: Optional[List[Attachment]] = None
      ): 
           self.__email_id = email_id
           self.__receivers = receivers
           self.__subject = subject
           self.__content = content
-          self.__attachments = attachments 
+          self.__attachments = attachments or []
           self.__timestamp = datetime.now()
           self.__is_sent = False 
      
@@ -59,10 +59,6 @@ class Email:
     @property
     def is_sent(self) -> bool:
          return self.__is_sent
-    
-    @attachments.setter
-    def attachments(self, attachments: List[Attachment]):
-         self.__attachments = attachments
     
     @is_sent.setter
     def is_sent(self, is_sent: bool):

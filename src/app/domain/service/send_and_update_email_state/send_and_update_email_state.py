@@ -17,15 +17,12 @@ class SendAndUpdateEmailStateService(SendAndUpdateEmailStateUseCase):
 
     async def send_and_update_email_state(self, command: SendAndUpdateEmailStateCommand) -> bool:
         success = False  
-        try:
-            send_result = await self.send_email(command)
-            update_result = await self.update_email_state(command)
-            if (send_result == True) and (update_result == True):
-                success = True  
-            return success
-        except Exception:
-            raise 
-        
+        send_result = await self.send_email(command)
+        update_result = await self.update_email_state(command)
+        if (send_result == True) and (update_result == True):
+            success = True  
+        return success
+
     async def send_email(self, command: SendAndUpdateEmailStateCommand) -> bool:
         try:
             send_command = SendEmailCommand(
