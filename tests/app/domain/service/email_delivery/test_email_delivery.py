@@ -1,7 +1,7 @@
 from unittest import IsolatedAsyncioTestCase
 
 from src.app.domain.service.email_delivery.email_delivery import EmailDeliveryService, EmailNotSentError, EmailStateNotUpdatedError
-from src.app.port.inward.email_delivery.email_delivery_command import EmailDeliveryCommand
+from src.app.port.inward.email_delivery.send_and_update_email_state_command import EmailDeliveryCommand
 from src.app.port.outward.send_email.send_email_command import SendEmailCommand
 from src.app.port.outward.send_email.send_email_port import SendEmailPort
 from src.app.port.outward.update_email_state.update_email_state_command import UpdateEmailStateCommand
@@ -9,22 +9,22 @@ from src.app.port.outward.update_email_state.update_email_state_port import Upda
 
 
 class SendEmailAdapter(SendEmailPort):
-    async def send_email(self, command: SendEmailCommand):
+    async def send_email(self, command: SendEmailCommand) -> bool:
         pass
 
 
 class UpdateEmailStateAdapter(UpdateEmailStatePort):
-    async def update_state(self, command: UpdateEmailStateCommand):
+    async def update_state(self, command: UpdateEmailStateCommand) -> bool:
         pass
 
 
 class SendEmailAdapterWithError(SendEmailPort):
-    async def send_email(self, command: SendEmailCommand):
+    async def send_email(self, command: SendEmailCommand) -> bool:
         raise Exception()
     
 
 class UpdateEmailStateAdapterWithError(UpdateEmailStatePort):
-    async def update_state(self, command: UpdateEmailStateCommand):
+    async def update_state(self, command: UpdateEmailStateCommand) -> bool:
         raise Exception()
 
 

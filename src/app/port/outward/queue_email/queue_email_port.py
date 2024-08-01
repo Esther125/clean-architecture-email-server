@@ -4,5 +4,5 @@ from src.app.port.outward.queue_email.queue_email_command import QueueEmailComma
 
 class QueueEmailPort(ABC):
     @abstractmethod
-    async def queue_email(self, command: QueueEmailCommand):
+    async def queue_email(self, command: QueueEmailCommand) -> bool:
         raise NotImplementedError

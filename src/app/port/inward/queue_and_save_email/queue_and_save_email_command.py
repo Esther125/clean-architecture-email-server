@@ -6,7 +6,7 @@ from pydantic import EmailStr
 from src.app.domain.entity.email import Attachment
 
 
-class EmailDispatchCommand:
+class QueueAndSaveEmailCommand:
     def __init__(
         self, 
         email_id: str,

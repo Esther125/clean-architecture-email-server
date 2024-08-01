@@ -4,5 +4,5 @@ from src.app.port.outward.update_email_state.update_email_state_command import U
 
 class UpdateEmailStatePort(ABC):
     @abstractmethod
-    async def update_state(self, command: UpdateEmailStateCommand):
+    async def update_state(self, command: UpdateEmailStateCommand) -> bool:
         raise NotImplementedError

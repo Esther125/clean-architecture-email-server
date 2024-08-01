@@ -1,30 +1,30 @@
 from unittest import IsolatedAsyncioTestCase
 
 from src.app.domain.service.email_dispatch.email_dispatch import EmailDispatchService, EmailNotQueuedError, EmailNotSavedError, EmailSaveAndQueueError
-from src.app.port.inward.email_dispatch.email_dispatch_command import EmailDispatchCommand
+from src.app.port.inward.email_dispatch.queue_and_save_email_command import EmailDispatchCommand
 from src.app.port.outward.queue_email.queue_email_command import QueueEmailCommand
 from src.app.port.outward.queue_email.queue_email_port import QueueEmailPort
 from src.app.port.outward.save_email.save_email_command import SaveEmailCommand
 from src.app.port.outward.save_email.save_email_port import SaveEmailPort
 
 
-class MockSaveEmailAdapter(SaveEmailPort):
-    async def save_email(self, command: SaveEmailCommand):
+class MockSaveEmailAdapter(SaveEmailPort) :
+    async def save_email(self, command: SaveEmailCommand) -> bool:
         pass
 
 
 class MockQueueEmailAdapter(QueueEmailPort):
-    async def queue_email(self, command: QueueEmailCommand):
+    async def queue_email(self, command: QueueEmailCommand) -> bool:
         pass
 
 
 class MockSaveEmailAdapterWithError(SaveEmailPort):
-    async def save_email(self, command: SaveEmailCommand):
+    async def save_email(self, command: SaveEmailCommand) -> bool:
         raise Exception()
 
 
 class MockQueueEmailAdapterWithError(QueueEmailPort):
-    async def queue_email(self, command: QueueEmailCommand):
+    async def queue_email(self, command: QueueEmailCommand) -> bool:
         raise Exception()
     
 
@@ -43,7 +43,7 @@ class TestEmailDispatchService(IsolatedAsyncioTestCase):
         queue_email_adapter = MockQueueEmailAdapter()
         service = EmailDispatchService(save_email_adapter, queue_email_adapter)
         success = await service.dispatch_email(self.command)
-        self.assertTrue(success, "Email dispatch should succeed")
+        self.assertTrue(success)
 
     async def test_email_dispatch_failure_on_save(self):
         save_email_adapter_with_error = MockSaveEmailAdapterWithError()
