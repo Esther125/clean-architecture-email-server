@@ -9,22 +9,22 @@ from src.app.port.outward.update_email_state.update_email_state_port import Upda
 
 
 class SendEmailAdapter(SendEmailPort):
-    async def send_email(self, command: SendEmailCommand) -> bool:
-        return True
+    async def send_email(self, command: SendEmailCommand):
+        pass
 
 
 class UpdateEmailStateAdapter(UpdateEmailStatePort):
-    async def update_state(self, command: UpdateEmailStateCommand) -> bool:
-        return True
+    async def update_state(self, command: UpdateEmailStateCommand):
+        pass
 
 
 class SendEmailAdapterWithError(SendEmailPort):
-    async def send_email(self, command: SendEmailCommand) -> bool:
+    async def send_email(self, command: SendEmailCommand):
         raise Exception()
     
 
 class UpdateEmailStateAdapterWithError(UpdateEmailStatePort):
-    async def update_state(self, command: UpdateEmailStateCommand) -> bool:
+    async def update_state(self, command: UpdateEmailStateCommand):
         raise Exception()
 
 
@@ -38,21 +38,21 @@ class TestSendAndUpdateEmailStateService(IsolatedAsyncioTestCase):
             attachments = None
         )
 
-    async def test_email_delivery_success(self):
+    async def test_send_and_update_email_state_success(self):
         send_email_adapter = SendEmailAdapter()
         update_email_state_adapter = UpdateEmailStateAdapter()
         service = SendAndUpdateEmailStateService(send_email_adapter, update_email_state_adapter)
         success = await service.send_and_update_email_state(self.command)
         self.assertTrue(success, "Email delivery should succeed")
 
-    async def test_email_delivery_failure_on_send(self):
+    async def test_send_and_update_email_state_failure_on_send(self):
         send_email_adapter_with_error = SendEmailAdapterWithError()
         update_email_state_adapter = UpdateEmailStateAdapter()
         service = SendAndUpdateEmailStateService(send_email_adapter_with_error, update_email_state_adapter)
         with self.assertRaises(EmailNotSentError):
             await service.send_and_update_email_state(self.command)
         
-    async def test_email_delivery_failure_on_update(self):
+    async def test_send_and_update_email_state_failure_on_update(self):
         send_email_adapter = SendEmailAdapter()
         update_email_state_adapter_with_error = UpdateEmailStateAdapterWithError()
         service = SendAndUpdateEmailStateService(send_email_adapter, update_email_state_adapter_with_error)

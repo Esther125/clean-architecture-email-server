@@ -16,14 +16,16 @@ class SendAndUpdateEmailStateService(SendAndUpdateEmailStateUseCase):
         self.__update_email_state_adapter = update_email_state_adapter
 
     async def send_and_update_email_state(self, command: SendAndUpdateEmailStateCommand) -> bool:
-        success = False  
-        send_result = await self.send_email(command)
-        update_result = await self.update_email_state(command)
-        if (send_result == True) and (update_result == True):
+        try:    
+            success = False  
+            await self.send_email(command)
+            await self.update_email_state(command)
             success = True  
+        except Exception:
+            raise
         return success
 
-    async def send_email(self, command: SendAndUpdateEmailStateCommand) -> bool:
+    async def send_email(self, command: SendAndUpdateEmailStateCommand) -> None:
         try:
             send_command = SendEmailCommand(
                 email_id = command.email_id,
@@ -32,22 +34,20 @@ class SendAndUpdateEmailStateService(SendAndUpdateEmailStateUseCase):
                 content = command.content,
                 attachments = command.attachments
             )
-            result = await self.__send_email_adapter.send_email(send_command)
-            return result
-        except Exception as err:
-            raise EmailNotSentError(command.email_id, err)
+            await self.__send_email_adapter.send_email(send_command)
+        except Exception as error:
+            raise EmailNotSentError(command.email_id, error)
 
-    async def update_email_state(self, command: SendAndUpdateEmailStateCommand) -> bool:
+    async def update_email_state(self, command: SendAndUpdateEmailStateCommand) -> None:
         try:
             # Update `is_sent` attribute to True if sent successfully
             update_state_command = UpdateEmailStateCommand(
                 email_id = command.email_id,
                 is_sent = True
             )   
-            result = await self.__update_email_state_adapter.update_state(update_state_command)
-            return result
-        except Exception as err:
-            raise EmailStateNotUpdatedError(command.email_id, err)
+            await self.__update_email_state_adapter.update_state(update_state_command)
+        except Exception as error:
+            raise EmailStateNotUpdatedError(command.email_id, error)
 
 
 class EmailNotSentError(Exception):

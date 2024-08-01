@@ -18,32 +18,22 @@ class QueueAndSaveEmailService(QueueAndSaveEmailUseCase):
     
     async def queue_and_save_email(self, command: QueueAndSaveEmailCommand) -> bool:
         success = False
-        results = await asyncio.gather(
+        db_error, queue_error = await asyncio.gather( 
             self.save_email(command),
             self.queue_email(command),
             return_exceptions = True
-        )
-
-        if results == [True, True]:
-            success = True
-        elif results[0] == True: 
-            queue_error_msg = self.generate_error_msg(results[0])
-            raise EmailNotQueuedError(command.email_id, queue_error_msg)
-        elif results[1] == True: 
-            save_error_msg = self.generate_error_msg(results[1])
-            raise EmailNotSavedError(command.email_id, save_error_msg)
+        ) 
+        if db_error and queue_error:
+            raise EmailSaveAndQueueError(command.email_id, db_error, queue_error)
+        elif db_error:
+            raise db_error
+        elif queue_error:
+            raise queue_error
         else:
-            db_error_msg = self.generate_error_msg(results[0])
-            queue_error_msg = self.generate_error_msg(results[1])
-            raise EmailSaveAndQueueError(command.email_id, db_error_msg, queue_error_msg)
+            success = True
         return success
 
-    def generate_error_msg(self,result) -> str:
-        if isinstance(result, Exception):
-            return str(result)
-        return "The adapter should return True."
-
-    async def save_email(self,command: QueueAndSaveEmailCommand) -> bool:
+    async def save_email(self,command: QueueAndSaveEmailCommand) -> None:
         try:
             save_command = SaveEmailCommand(
                 email_id = command.email_id,
@@ -52,12 +42,11 @@ class QueueAndSaveEmailService(QueueAndSaveEmailUseCase):
                 content = command.content,
                 attachments = command.attachments
             )
-            result = await self.__save_email_adapter.save_email(save_command)
-            return result 
-        except Exception:
-            raise 
+            await self.__save_email_adapter.save_email(save_command)
+        except Exception as error:
+            raise EmailNotSavedError(command.email_id, error)
         
-    async def queue_email(self,command: QueueAndSaveEmailCommand) -> bool:
+    async def queue_email(self,command: QueueAndSaveEmailCommand) -> None:
         try:
             queue_command = QueueEmailCommand(
                 email_id = command.email_id,
@@ -66,32 +55,31 @@ class QueueAndSaveEmailService(QueueAndSaveEmailUseCase):
                 content = command.content,
                 attachments = command.attachments
             )
-            result = await self.__queue_email_adapter.queue_email(queue_command)
-            return result
-        except Exception:
-            raise 
+            await self.__queue_email_adapter.queue_email(queue_command)
+        except Exception as error:
+            raise EmailNotQueuedError(command.email_id, error)
 
 
 class EmailNotSavedError(Exception):
-    def __init__(self, email_id, db_error_msg):
+    def __init__(self, email_id, db_error):
         self.email_id = email_id
-        self.db_error_msg = db_error_msg
-        self.message = f"Email ID: {email_id} failed to be saved. DB Error: {db_error_msg}"
+        self.db_error = db_error
+        self.message = f"Email ID: {email_id} failed to be saved. DB Error: {db_error}"
         super().__init__(self.message)
 
  
 class EmailNotQueuedError(Exception):
-    def __init__(self, email_id, queue_error_msg):
+    def __init__(self, email_id, queue_error):
         self.email_id = email_id
-        self.queue_error_msg = queue_error_msg
-        self.message = f"Email ID: {email_id} failed to be queued. Queue Error: {queue_error_msg}"
+        self.queue_error = queue_error
+        self.message = f"Email ID: {email_id} failed to be queued. Queue Error: {queue_error}"
         super().__init__(self.message)
 
 
 class EmailSaveAndQueueError(Exception):
-    def __init__(self, email_id, db_error_msg, queue_error_msg):
+    def __init__(self, email_id, db_error, queue_error):
         self.email_id = email_id
-        self.db_error_msg = db_error_msg
-        self.queue_error_msg = queue_error_msg
-        self.message = f"Email ID: {email_id} failed to be saved and queued. DB Error: {db_error_msg}, Queue Error: {queue_error_msg}"
+        self.db_error = db_error
+        self.queue_error = queue_error
+        self.message = f"Email ID: {email_id} failed to be saved and queued. DB Error: {db_error}, Queue Error: {queue_error}"
         super().__init__(self.message)
