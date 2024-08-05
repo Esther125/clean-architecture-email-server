@@ -58,36 +58,37 @@ send_and_update_email_state_service: SendAndUpdateEmailStateUseCase = (
 
 @router.post("/user/email", status_code=200, summary="For users to send emails.")
 async def handle_queue_and_save_email_request(user_request: UserRequestWebInterface):
-    email_id = str(uuid.uuid4())
-    attachments = []
-    if user_request.attachments is not None:
-        attachments = [
-            Attachment(
-                filename=attach.filename,
-                filetype=attach.filetype,
-                blobname=attach.blobname,
-            )
-            for attach in user_request.attachments
-        ]
+    try:
+        email_id = str(uuid.uuid4())
+        attachments = []
+        if user_request.attachments is not None:
+            attachments = [
+                Attachment(
+                    filename=attach.filename,
+                    filetype=attach.filetype,
+                    blobname=attach.blobname,
+                )
+                for attach in user_request.attachments
+            ]
 
-    queue_and_save_email_command = QueueAndSaveEmailCommand(
-        email_id=email_id,
-        receivers=user_request.receivers,
-        subject=user_request.subject,
-        content=user_request.content,
-        attachments=attachments,
-    )
-    success = await queue_and_save_email_service.queue_and_save_email(
-        queue_and_save_email_command
-    )
-
-    if success:
-        return SendEmailResponse(
-            message="Successfully dispatched the email request.", email_id=email_id
+        queue_and_save_email_command = QueueAndSaveEmailCommand(
+            email_id=email_id,
+            receivers=user_request.receivers,
+            subject=user_request.subject,
+            content=user_request.content,
+            attachments=attachments,
         )
-    else:
-        return HTTPException(
-            status_code=400, detail="Failed to dispatch the email request."
+        success = await queue_and_save_email_service.queue_and_save_email(
+            queue_and_save_email_command
+        )
+
+        if success is True:
+            return SendEmailResponse(
+                message="Successfully queue and save email.", email_id=email_id
+            )
+    except Exception as error:
+        raise HTTPException(
+            status_code=400, detail=f"Failed to queue and save email. Error: {error}"
         )
 
 
@@ -95,34 +96,36 @@ async def handle_queue_and_save_email_request(user_request: UserRequestWebInterf
 async def handle_send_and_update_email_state_request(
     queue_request: QueueRequestWebInterface,
 ):
-    attachments = []
-    if queue_request.attachments is not None:
-        attachments = [
-            Attachment(
-                filename=attach.filename,
-                filetype=attach.filetype,
-                blobname=attach.blobname,
-            )
-            for attach in queue_request.attachments
-        ]
+    try:
+        attachments = []
+        if queue_request.attachments is not None:
+            attachments = [
+                Attachment(
+                    filename=attach.filename,
+                    filetype=attach.filetype,
+                    blobname=attach.blobname,
+                )
+                for attach in queue_request.attachments
+            ]
 
-    send_and_update_email_state_command = SendAndUpdateEmailStateCommand(
-        email_id=queue_request.email_id,
-        receivers=queue_request.receivers,
-        subject=queue_request.subject,
-        content=queue_request.content,
-        attachments=attachments,
-    )
-    success = await send_and_update_email_state_service.send_and_update_email_state(
-        send_and_update_email_state_command
-    )
-
-    if success:
-        return SendEmailResponse(
-            message="Successfully delivered the email request.",
+        send_and_update_email_state_command = SendAndUpdateEmailStateCommand(
             email_id=queue_request.email_id,
+            receivers=queue_request.receivers,
+            subject=queue_request.subject,
+            content=queue_request.content,
+            attachments=attachments,
         )
-    else:
-        return HTTPException(
-            status_code=400, detail="Failed to deliver the email request."
+        success = await send_and_update_email_state_service.send_and_update_email_state(
+            send_and_update_email_state_command
+        )
+
+        if success is True:
+            return SendEmailResponse(
+                message="Successfully send and update email state.",
+                email_id=queue_request.email_id,
+            )
+    except Exception as error:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to send and update email state. Error: {error}",
         )

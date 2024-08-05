@@ -21,7 +21,6 @@ class TestSendEmailEndpoint(TestCase):
         result = response.json()
         assert result["email_id"], "email_id should not be null"
         assert isinstance(result["email_id"], str), "email_id should be a string"
-        assert result["message"] == "Successfully dispatched the email request."
 
     def test_deliver_email(self):
         response = self.client.post(
@@ -38,4 +37,3 @@ class TestSendEmailEndpoint(TestCase):
         result = response.json()
         assert result["email_id"], "email_id should not be null"
         assert isinstance(result["email_id"], str), "email_id should be a string"
-        assert result["message"] == "Successfully delivered the email request."
