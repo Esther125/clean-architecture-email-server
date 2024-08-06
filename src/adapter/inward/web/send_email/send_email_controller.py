@@ -88,7 +88,7 @@ async def handle_queue_and_save_email_request(user_request: UserRequestWebInterf
             )
     except Exception as error:
         raise HTTPException(
-            status_code=400, detail=f"Failed to queue and save email. Error: {error}"
+            status_code=500, detail=f"Failed to queue and save email. Error: {error}"
         )
 
 
@@ -126,6 +126,6 @@ async def handle_send_and_update_email_state_request(
             )
     except Exception as error:
         raise HTTPException(
-            status_code=400,
+            status_code=500,
             detail=f"Failed to send and update email state. Error: {error}",
         )
