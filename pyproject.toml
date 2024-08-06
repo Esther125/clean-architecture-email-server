@@ -6,12 +6,13 @@ authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 uvicorn = "^0.30.1"
 fastapi = "^0.111.0"
 mypy = "^1.11.1"
 pre-commit = "^3.8.0"
 ruff = "^0.5.5"
+dependency-injector = "^4.41.0"
 
 
 [build-system]
