@@ -18,22 +18,22 @@ from src.app.port.outward.update_email_state.update_email_state_port import (
 )
 
 
-class SendEmailAdapter(SendEmailPort):
+class MockSendEmailAdapter(SendEmailPort):
     async def send_email(self, command: SendEmailCommand):
         pass
 
 
-class UpdateEmailStateAdapter(UpdateEmailStatePort):
+class MockUpdateEmailStateAdapter(UpdateEmailStatePort):
     async def update_state(self, command: UpdateEmailStateCommand):
         pass
 
 
-class SendEmailAdapterWithError(SendEmailPort):
+class MockSendEmailAdapterWithError(SendEmailPort):
     async def send_email(self, command: SendEmailCommand):
         raise Exception()
 
 
-class UpdateEmailStateAdapterWithError(UpdateEmailStatePort):
+class MockUpdateEmailStateAdapterWithError(UpdateEmailStatePort):
     async def update_state(self, command: UpdateEmailStateCommand):
         raise Exception()
 
@@ -49,8 +49,8 @@ class TestSendAndUpdateEmailStateService(IsolatedAsyncioTestCase):
         )
 
     async def test_send_and_update_email_state_success(self):
-        send_email_adapter = SendEmailAdapter()
-        update_email_state_adapter = UpdateEmailStateAdapter()
+        send_email_adapter = MockSendEmailAdapter()
+        update_email_state_adapter = MockUpdateEmailStateAdapter()
         service = SendAndUpdateEmailStateService(
             send_email_adapter, update_email_state_adapter
         )
@@ -58,8 +58,8 @@ class TestSendAndUpdateEmailStateService(IsolatedAsyncioTestCase):
         self.assertTrue(success, "Email delivery should succeed")
 
     async def test_send_and_update_email_state_failure_on_send(self):
-        send_email_adapter_with_error = SendEmailAdapterWithError()
-        update_email_state_adapter = UpdateEmailStateAdapter()
+        send_email_adapter_with_error = MockSendEmailAdapterWithError()
+        update_email_state_adapter = MockUpdateEmailStateAdapter()
         service = SendAndUpdateEmailStateService(
             send_email_adapter_with_error, update_email_state_adapter
         )
@@ -67,8 +67,8 @@ class TestSendAndUpdateEmailStateService(IsolatedAsyncioTestCase):
             await service.send_and_update_email_state(self.command)
 
     async def test_send_and_update_email_state_failure_on_update(self):
-        send_email_adapter = SendEmailAdapter()
-        update_email_state_adapter_with_error = UpdateEmailStateAdapterWithError()
+        send_email_adapter = MockSendEmailAdapter()
+        update_email_state_adapter_with_error = MockUpdateEmailStateAdapterWithError()
         service = SendAndUpdateEmailStateService(
             send_email_adapter, update_email_state_adapter_with_error
         )
