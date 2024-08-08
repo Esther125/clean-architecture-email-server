@@ -2,7 +2,7 @@
 
 ### Start the Email Server
 ```python
-uvicorn src.main:app --port 8080 --reload;
+uvicorn src.main:app --port 8080 --reload
 ```
 
 ### Run Tests
