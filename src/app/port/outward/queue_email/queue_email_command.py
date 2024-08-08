@@ -3,13 +3,15 @@ from pydantic import EmailStr
 
 from src.app.domain.entity.email import Attachment
 
+
 class QueueEmailCommand:
-    def __init__(self,
+    def __init__(
+        self,
         email_id: str,
         receivers: List[EmailStr],
         subject: str,
         content: str,
-        attachments: Optional[List[Attachment]] = None
+        attachments: Optional[List[Attachment]] = None,
     ):
         self.__email_id = email_id
         self.__receivers = receivers
@@ -19,20 +21,20 @@ class QueueEmailCommand:
 
     @property
     def email_id(self) -> str:
-         return self.__email_id
+        return self.__email_id
 
     @property
     def receivers(self) -> List[EmailStr]:
-         return self.__receivers
-    
+        return self.__receivers
+
     @property
     def subject(self) -> str:
-         return self.__subject
-    
+        return self.__subject
+
     @property
     def content(self) -> str:
-         return self.__content
-    
+        return self.__content
+
     @property
     def attachments(self) -> List[Attachment]:
-         return self.__attachments
+        return self.__attachments

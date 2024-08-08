@@ -1,26 +1,13 @@
 import uuid
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from dependency_injector.wiring import inject, Provide
 
 from src.adapter.inward.web.send_email.send_email_schema import (
     QueueRequestWebInterface,
     SendEmailResponse,
     UserRequestWebInterface,
 )
-from src.adapter.outward.integration.send_email_adapter import SendEmailAdapter
-from src.adapter.outward.persistence.email_repository import EmailRepository
-from src.adapter.outward.persistence.update_email_state_adapter import (
-    UpdateEmailStateAdapter,
-)
-from src.adapter.outward.queue.email_queue_producer_adapter import (
-    EmailQueueProducerAdapter,
-)
 from src.app.domain.entity.email import Attachment
-from src.app.domain.service.queue_and_save_email.queue_and_save_email import (
-    QueueAndSaveEmailService,
-)
-from src.app.domain.service.send_and_update_email_state.send_and_update_email_state import (
-    SendAndUpdateEmailStateService,
-)
 from src.app.port.inward.queue_and_save_email.queue_and_save_email_command import (
     QueueAndSaveEmailCommand,
 )
@@ -33,31 +20,20 @@ from src.app.port.inward.send_and_update_email_state.send_and_update_email_state
 from src.app.port.inward.send_and_update_email_state.send_and_update_email_state_use_case import (
     SendAndUpdateEmailStateUseCase,
 )
-from src.app.port.outward.queue_email.queue_email_port import QueueEmailPort
-from src.app.port.outward.save_email.save_email_port import SaveEmailPort
-from src.app.port.outward.send_email.send_email_port import SendEmailPort
-from src.app.port.outward.update_email_state.update_email_state_port import (
-    UpdateEmailStatePort,
-)
+from src.container import Container
 
 
 router = APIRouter(prefix="/v1")
 
-save_email_adapter: SaveEmailPort = EmailRepository()
-queue_email_adapter: QueueEmailPort = EmailQueueProducerAdapter()
-queue_and_save_email_service: QueueAndSaveEmailUseCase = QueueAndSaveEmailService(
-    save_email_adapter, queue_email_adapter
-)
-
-send_email_adapter: SendEmailPort = SendEmailAdapter()
-update_email_state_adapter: UpdateEmailStatePort = UpdateEmailStateAdapter()
-send_and_update_email_state_service: SendAndUpdateEmailStateUseCase = (
-    SendAndUpdateEmailStateService(send_email_adapter, update_email_state_adapter)
-)
-
 
 @router.post("/user/email", status_code=200, summary="For users to send emails.")
-async def handle_queue_and_save_email_request(user_request: UserRequestWebInterface):
+@inject
+async def handle_queue_and_save_email_request(
+    user_request: UserRequestWebInterface,
+    queue_and_save_email_service: QueueAndSaveEmailUseCase = Depends(
+        Provide[Container.queue_and_save_email_service]
+    ),
+):
     try:
         email_id = str(uuid.uuid4())
         attachments = []
@@ -93,8 +69,12 @@ async def handle_queue_and_save_email_request(user_request: UserRequestWebInterf
 
 
 @router.post("/queue/email", status_code=200, summary="For queue to dequeue emails.")
+@inject
 async def handle_send_and_update_email_state_request(
     queue_request: QueueRequestWebInterface,
+    send_and_update_email_state_service: SendAndUpdateEmailStateUseCase = Depends(
+        Provide[Container.send_and_update_email_state_service]
+    ),
 ):
     try:
         attachments = []
