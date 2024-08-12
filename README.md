@@ -1,10 +1,11 @@
 # milecoolab-email-server
 
+### Start the Email Server
+```python
+fastapi dev src/main.py
+```
+
 ### Run Tests
 ```python
-# test services
-
-python -m unittest tests/app/domain/service/queue_and_save_email/test_queue_and_save_email.py
-
-python -m unittest tests/app/domain/service/send_and_update_email_state/test_send_and_update_email_state.py
+python -m unittest
 ```

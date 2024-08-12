@@ -1,11 +1,16 @@
 from fastapi import FastAPI
 
-# from .adapter.inward.web import home
-# from .adapter.inward.web.health import health
-# from .adapter.inward.web.requisition import gws, plps
+from src.container import Container
+from .adapter.inward.web.send_email import send_email_controller
 
-app = FastAPI()
-# app.include_router(health.router)
-# app.include_router(home.router)
-# app.include_router(gws.router)
-# app.include_router(plps.router)
+
+def create_app() -> FastAPI:
+    container = Container()
+
+    app = FastAPI()
+    app.container = container  # type: ignore[attr-defined]
+    app.include_router(send_email_controller.router)
+    return app
+
+
+app = create_app()
