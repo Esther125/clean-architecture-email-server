@@ -2,7 +2,7 @@
 
 ### Start the Email Server
 ```python
-uvicorn src.main:app --port 8080 --reload
+fastapi dev src/main.py
 ```
 
 ### Run Tests
