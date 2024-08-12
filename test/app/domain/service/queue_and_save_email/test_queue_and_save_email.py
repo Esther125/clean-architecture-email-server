@@ -49,8 +49,10 @@ class TestQueueAndSaveEmailService(IsolatedAsyncioTestCase):
         save_email_adapter = MockSaveEmailAdapter()
         queue_email_adapter = MockQueueEmailAdapter()
         service = QueueAndSaveEmailService(save_email_adapter, queue_email_adapter)
-        success = await service.queue_and_save_email(self.command)
-        self.assertTrue(success)
+        try:
+            await service.queue_and_save_email(self.command)
+        except Exception as error:
+            self.fail(f"Queue and save email failed with exception: {error}")
 
     async def test_queue_and_save_email_failure_on_save(self):
         save_email_adapter_with_error = MockSaveEmailAdapterWithError()

@@ -54,8 +54,10 @@ class TestSendAndUpdateEmailStateService(IsolatedAsyncioTestCase):
         service = SendAndUpdateEmailStateService(
             send_email_adapter, update_email_state_adapter
         )
-        success = await service.send_and_update_email_state(self.command)
-        self.assertTrue(success, "Email delivery should succeed")
+        try:
+            await service.send_and_update_email_state(self.command)
+        except Exception as error:
+            self.fail(f"Send and update email state failed with exception: {error}")
 
     async def test_send_and_update_email_state_failure_on_send(self):
         send_email_adapter_with_error = MockSendEmailAdapterWithError()
