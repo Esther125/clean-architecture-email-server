@@ -43,7 +43,7 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             self.mock_queue_and_save_email_service
         ):
             response = self.client.post(
-                "/v1/user/email",
+                "/v1/user-email-request",
                 headers={"Content-Type": "application/json"},
                 json={
                     "receivers": ["test@gmail.com"],
@@ -53,7 +53,7 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             )
             assert response.status_code == 200
             result = response.json()
-            assert result["email_id"], "email_id should not be null"
+            assert result["email_id"]
 
     async def test_queue_and_save_email_failed(self):
         self.mock_queue_and_save_email_service.queue_and_save_email.return_value = False
@@ -66,7 +66,7 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             self.mock_queue_and_save_email_service
         ):
             response = self.client.post(
-                "/v1/user/email",
+                "/v1/queue-email-request",
                 headers={"Content-Type": "application/json"},
                 json={
                     "receivers": ["test@gmail.com"],
@@ -87,7 +87,7 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             self.mock_send_and_update_email_state_service
         ):
             response = self.client.post(
-                "/v1/queue/email",
+                "/v1/queue-email-request",
                 headers={"Content-Type": "application/json"},
                 json={
                     "email_id": "test-id",
@@ -98,7 +98,7 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             )
             assert response.status_code == 200
             result = response.json()
-            assert result["email_id"], "email_id should not be null"
+            assert result["email_id"]
 
     async def test_send_and_update_email_state_failed(self):
         self.mock_send_and_update_email_state_service.send_and_update_email_state.return_value = False
@@ -111,7 +111,7 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             self.mock_send_and_update_email_state_service
         ):
             response = self.client.post(
-                "/v1/queue/email",
+                "/v1/queue-email-request",
                 headers={"Content-Type": "application/json"},
                 json={
                     "email_id": "test-id",

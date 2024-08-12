@@ -26,7 +26,9 @@ from src.container import Container
 router = APIRouter(prefix="/v1")
 
 
-@router.post("/user/email", status_code=200, summary="For users to send emails.")
+@router.post(
+    "/user-email-request", status_code=200, summary="For users to send emails."
+)
 @inject
 async def handle_queue_and_save_email_request(
     user_request: UserRequestWebInterface,
@@ -68,7 +70,9 @@ async def handle_queue_and_save_email_request(
         )
 
 
-@router.post("/queue/email", status_code=200, summary="For queue to dequeue emails.")
+@router.post(
+    "/queue-email-request", status_code=200, summary="For queue to dequeue emails."
+)
 @inject
 async def handle_send_and_update_email_state_request(
     queue_request: QueueRequestWebInterface,
