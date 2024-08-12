@@ -5,9 +5,11 @@ from src.adapter.outward.queue.email_queue_producer_adapter import (
     EmailQueueProducerAdapter,
 )
 from src.app.domain.service.queue_and_save_email.queue_and_save_email import (
+    EmailNotQueuedError,
     QueueAndSaveEmailService,
 )
 from src.app.domain.service.send_and_update_email_state.send_and_update_email_state import (
+    EmailStateNotUpdatedError,
     SendAndUpdateEmailStateService,
 )
 from src.app.port.outward.send_email.send_email_port import SendEmailPort
@@ -33,8 +35,6 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
         )
 
     async def test_queue_and_save_email(self):
-        self.mock_queue_and_save_email_service.queue_and_save_email.return_value = True
-
         with app.container.save_email_adapter.override(
             self.mock_save_email_adapter
         ), app.container.queue_email_adapter.override(
@@ -56,8 +56,6 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             assert result["email_id"] is not None
 
     async def test_queue_and_save_email_failed_on_invalid_request_data(self):
-        self.mock_queue_and_save_email_service.queue_and_save_email.return_value = False
-
         with app.container.save_email_adapter.override(
             self.mock_save_email_adapter
         ), app.container.queue_email_adapter.override(
@@ -66,7 +64,7 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             self.mock_queue_and_save_email_service
         ):
             response = self.client.post(
-                "/v1/queue-email-request",
+                "/v1/user-email-request",
                 headers={"Content-Type": "application/json"},
                 json={
                     "receivers": ["test@gmail.com"],
@@ -77,8 +75,11 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             assert response.status_code == 422
 
     async def test_queue_and_save_email_failed_on_internal_server_error(self):
-        self.mock_queue_and_save_email_service.queue_and_save_email.return_value = False
-
+        self.mock_queue_and_save_email_service.queue_and_save_email.side_effect = (
+            EmailNotQueuedError(
+                queue_error="Queue connection failed", email_id="test-id"
+            )
+        )
         with app.container.save_email_adapter.override(
             self.mock_save_email_adapter
         ), app.container.queue_email_adapter.override(
@@ -87,20 +88,20 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             self.mock_queue_and_save_email_service
         ):
             response = self.client.post(
-                "/v1/queue-email-request",
+                "/v1/user-email-request",
                 headers={"Content-Type": "application/json"},
                 json={
+                    "email_id": "test-id",
                     "receivers": ["test@gmail.com"],
                     "subject": "Test Subject",
                     "content": "test content",
                 },
             )
-            print("RESPONSE_CODE: ", response.status_code)
             assert response.status_code == 500
+            result = response.json()
+            assert "Failed to queue and save email" in result["detail"]
 
     async def test_send_and_update_email_state(self):
-        self.mock_send_and_update_email_state_service.send_and_update_email_state.return_value = True
-
         with app.container.send_email_adapter.override(
             self.mock_send_email_adapter
         ), app.container.update_email_state_adapter.override(
@@ -123,8 +124,6 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             assert result["email_id"] is not None
 
     async def test_send_and_update_email_state_failed_on_invalid_request_data(self):
-        self.mock_send_and_update_email_state_service.send_and_update_email_state.return_value = False
-
         with app.container.send_email_adapter.override(
             self.mock_send_email_adapter
         ), app.container.update_email_state_adapter.override(
@@ -145,8 +144,9 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             assert response.status_code == 422
 
     async def test_send_and_update_email_state_failed_on_internal_server_error(self):
-        self.mock_send_and_update_email_state_service.send_and_update_email_state.return_value = False
-
+        self.mock_send_and_update_email_state_service.send_and_update_email_state.side_effect = EmailStateNotUpdatedError(
+            update_error="Database connection failed", email_id="test-id"
+        )
         with app.container.send_email_adapter.override(
             self.mock_send_email_adapter
         ), app.container.update_email_state_adapter.override(
@@ -164,5 +164,6 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
                     "content": "test content",
                 },
             )
-            print("RESPONSE_CODE2: ", response.status_code)
             assert response.status_code == 500
+            result = response.json()
+            assert "Failed to send and update email state" in result["detail"]
