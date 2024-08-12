@@ -18,8 +18,7 @@ class QueueAndSaveEmailService(QueueAndSaveEmailUseCase):
         self.__save_email_adapter = save_email_adapter
         self.__queue_email_adapter = queue_email_adapter
 
-    async def queue_and_save_email(self, command: QueueAndSaveEmailCommand) -> bool:
-        success = False
+    async def queue_and_save_email(self, command: QueueAndSaveEmailCommand) -> None:
         db_error, queue_error = await asyncio.gather(
             self.save_email(command), self.queue_email(command), return_exceptions=True
         )
@@ -30,8 +29,7 @@ class QueueAndSaveEmailService(QueueAndSaveEmailUseCase):
         elif queue_error:
             raise queue_error
         else:
-            success = True
-        return success
+            return
 
     async def save_email(self, command: QueueAndSaveEmailCommand) -> None:
         try:

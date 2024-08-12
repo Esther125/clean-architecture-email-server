@@ -56,14 +56,13 @@ async def handle_queue_and_save_email_request(
             content=user_request.content,
             attachments=attachments,
         )
-        success = await queue_and_save_email_service.queue_and_save_email(
+        await queue_and_save_email_service.queue_and_save_email(
             queue_and_save_email_command
         )
 
-        if success is True:
-            return SendEmailResponse(
-                message="Successfully queue and save email.", email_id=email_id
-            )
+        return SendEmailResponse(
+            message="Successfully queue and save email.", email_id=email_id
+        )
     except Exception as error:
         raise HTTPException(
             status_code=500, detail=f"Failed to queue and save email. Error: {error}"
@@ -99,15 +98,14 @@ async def handle_send_and_update_email_state_request(
             content=queue_request.content,
             attachments=attachments,
         )
-        success = await send_and_update_email_state_service.send_and_update_email_state(
+        await send_and_update_email_state_service.send_and_update_email_state(
             send_and_update_email_state_command
         )
 
-        if success is True:
-            return SendEmailResponse(
-                message="Successfully send and update email state.",
-                email_id=queue_request.email_id,
-            )
+        return SendEmailResponse(
+            message="Successfully send and update email state.",
+            email_id=queue_request.email_id,
+        )
     except Exception as error:
         raise HTTPException(
             status_code=500,
