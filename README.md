@@ -9,3 +9,6 @@ fastapi dev src/main.py
 ```python
 python -m unittest
 ```
+
+### System Design Diagram
+![Example Image](./images/system_design_diagram.png)
