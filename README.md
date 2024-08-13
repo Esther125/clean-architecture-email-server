@@ -2,7 +2,7 @@
 
 ### Start the Email Server
 ```python
-fastapi dev src/main.py
+docker compose up
 ```
 
 ### Run Tests
