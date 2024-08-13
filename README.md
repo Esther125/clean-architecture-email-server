@@ -1,6 +1,6 @@
 # milecoolab-email-server
 
-### Start the Email Server
+### Start the Email Server 
 ```python
 docker compose up
 ```
