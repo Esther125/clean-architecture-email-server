@@ -1,0 +1,18 @@
+steps:
+- id: "build dev image"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["build","--target", "development","-t", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:${_PR_NUMBER}", "."]
+- id: "push dev image"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["push", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:${_PR_NUMBER}"]
+- id: "ruff"
+  name: "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:${_PR_NUMBER}"
+  args: ["ruff", "check", "src/","test/"]
+- id: "mypy"
+  name: "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:${_PR_NUMBER}"
+  args: ["mypy", "--explicit-package-bases", "src", "test"]
+- id: "run test case"
+  name: "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:${_PR_NUMBER}"
+  args: ["python", "-m", "unittest"]
+options:
+  logging: CLOUD_LOGGING_ONLY
