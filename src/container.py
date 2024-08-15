@@ -4,8 +4,8 @@ from src.adapter.outward.persistence.email_repository import EmailRepository
 from src.adapter.outward.persistence.update_email_state_adapter import (
     UpdateEmailStateAdapter,
 )
-from src.adapter.outward.queue.email_queue_producer_adapter import (
-    EmailQueueProducerAdapter,
+from src.adapter.outward.queue.email_queue_publisher_adapter import (
+    EmailQueuePublisherAdapter,
 )
 from src.app.domain.service.queue_and_save_email.queue_and_save_email import (
     QueueAndSaveEmailService,
@@ -24,7 +24,7 @@ class Container(containers.DeclarativeContainer):
         EmailRepository,
     )
     queue_email_adapter = providers.Factory(
-        EmailQueueProducerAdapter,
+        EmailQueuePublisherAdapter,
     )
     queue_and_save_email_service = providers.Factory(
         QueueAndSaveEmailService,

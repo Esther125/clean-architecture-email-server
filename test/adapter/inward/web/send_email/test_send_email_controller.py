@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 from unittest import IsolatedAsyncioTestCase, mock
 from src.adapter.outward.persistence.email_repository import EmailRepository
-from src.adapter.outward.queue.email_queue_producer_adapter import (
-    EmailQueueProducerAdapter,
+from src.adapter.outward.queue.email_queue_publisher_adapter import (
+    EmailQueuePublisherAdapter,
 )
 from src.app.domain.service.queue_and_save_email.queue_and_save_email import (
     EmailNotQueuedError,
@@ -23,7 +23,7 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
     def setUp(self):
         self.client = TestClient(app)
         self.mock_save_email_adapter = mock.Mock(spec=EmailRepository)
-        self.mock_queue_email_adapter = mock.Mock(spec=EmailQueueProducerAdapter)
+        self.mock_queue_email_adapter = mock.Mock(spec=EmailQueuePublisherAdapter)
         self.mock_queue_and_save_email_service = mock.Mock(
             spec=QueueAndSaveEmailService
         )
