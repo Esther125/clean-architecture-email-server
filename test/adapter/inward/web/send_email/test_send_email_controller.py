@@ -168,7 +168,6 @@ class TestSendEmailEndpoint(IsolatedAsyncioTestCase):
             )
             assert response.status_code == 500
             result = response.json()
-            print("RESULT: ", result)
             assert "Failed to parse queue request" in result["detail"]
 
     async def test_send_and_update_email_state_failed_on_internal_server_error(self):
