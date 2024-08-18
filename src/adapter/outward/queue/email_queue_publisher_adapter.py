@@ -36,7 +36,7 @@ class EmailQueuePublisherAdapter(QueueEmailPort):
             future = self.publisher.publish(self.topic_path, email_message)
             message_id = future.result()
             print(
-                f"Successfully published the email message (ID: {message_id}) to pub/sub."
+                f"Successfully published the email message (Message ID: {message_id}) to pub/sub."
             )
         except Exception as error:
             raise FailedToPublishedEmailToQueueError(command.email_id, error)
@@ -46,25 +46,5 @@ class FailedToPublishedEmailToQueueError(Exception):
     def __init__(self, email_id, error) -> None:
         self.email_id = email_id
         self.error = error
-        self.message = f"Failed to publish the email message (ID: {email_id}) to pub/sub. Error: {error}"
+        self.message = f"Failed to publish the email message (Email ID: {email_id}) to pub/sub. Error: {error}"
         super().__init__(self.message)
-
-
-# Test block
-# import asyncio
-
-# async def publish_message():
-#     try:
-#         adapter = EmailQueuePublisherAdapter()
-#         command = QueueEmailCommand(
-#             email_id="test-id",
-#             receivers=["test@gmail.com"],
-#             subject="Test Subject",
-#             content="Test Content"
-#         )
-#         await adapter.queue_email(command)
-#     except Exception as e:
-#         print(f"Failed: {e}")
-
-# if __name__ == "__main__":
-#     asyncio.run(publish_message())

@@ -1,5 +1,7 @@
+import base64
+import json
 import uuid
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from dependency_injector.wiring import inject, Provide
 
 from src.adapter.inward.web.send_email.send_email_schema import (
@@ -24,6 +26,15 @@ from src.container import Container
 
 
 router = APIRouter(prefix="/v1")
+
+
+async def parse_queue_resquest(request: Request) -> QueueRequestWebInterface:
+    raw_body = await request.body()
+    json_body = json.loads(raw_body.decode("utf-8"))
+    encoded_data = json_body["message"]["data"]
+    decoded_data = base64.b64decode(encoded_data).decode("utf-8")
+    queue_request = QueueRequestWebInterface.model_validate_json(decoded_data)
+    return queue_request
 
 
 @router.post(
@@ -74,12 +85,14 @@ async def handle_queue_and_save_email_request(
 )
 @inject
 async def handle_send_and_update_email_state_request(
-    queue_request: QueueRequestWebInterface,
+    request: Request,
     send_and_update_email_state_service: SendAndUpdateEmailStateUseCase = Depends(
         Provide[Container.send_and_update_email_state_service]
     ),
 ):
     try:
+        queue_request = await parse_queue_resquest(request)
+
         attachments = []
         if queue_request.attachments is not None:
             attachments = [
