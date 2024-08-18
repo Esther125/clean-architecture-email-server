@@ -29,12 +29,15 @@ router = APIRouter(prefix="/v1")
 
 
 async def parse_queue_resquest(request: Request) -> QueueRequestWebInterface:
-    raw_body = await request.body()
-    json_body = json.loads(raw_body.decode("utf-8"))
-    encoded_data = json_body["message"]["data"]
-    decoded_data = base64.b64decode(encoded_data).decode("utf-8")
-    queue_request = QueueRequestWebInterface.model_validate_json(decoded_data)
-    return queue_request
+    try:
+        raw_body = await request.body()
+        json_body = json.loads(raw_body.decode("utf-8"))
+        encoded_data = json_body["message"]["data"]
+        decoded_data = base64.b64decode(encoded_data).decode("utf-8")
+        queue_request = QueueRequestWebInterface.model_validate_json(decoded_data)
+        return queue_request
+    except Exception as error:
+        raise FailedToParseQueueRequestError(error)
 
 
 @router.post(
@@ -124,3 +127,10 @@ async def handle_send_and_update_email_state_request(
             status_code=500,
             detail=f"Failed to send and update email state. Error: {error}",
         )
+
+
+class FailedToParseQueueRequestError(Exception):
+    def __init__(self, error) -> None:
+        self.error = error
+        self.message = f"Failed to parse queue request. Error: {error}"
+        super().__init__(self.message)
