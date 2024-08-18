@@ -27,8 +27,8 @@ class EmailQueuePublisherAdapter(QueueEmailPort):
             }
             email_message = json.dumps(email).encode("utf-8")
             return email_message
-        except Exception:
-            raise
+        except Exception as error:
+            raise FailedToGenerateEmailMessageError(error)
 
     async def queue_email(self, command: QueueEmailCommand) -> None:
         try:
@@ -40,6 +40,13 @@ class EmailQueuePublisherAdapter(QueueEmailPort):
             )
         except Exception as error:
             raise FailedToPublishedEmailToQueueError(command.email_id, error)
+
+
+class FailedToGenerateEmailMessageError(Exception):
+    def __init__(self, error) -> None:
+        self.error = error
+        self.message = f"Failed to generate email message. Error: {error}"
+        super().__init__(self.message)
 
 
 class FailedToPublishedEmailToQueueError(Exception):
