@@ -132,5 +132,5 @@ async def handle_send_and_update_email_state_request(
 class FailedToParseQueueRequestError(Exception):
     def __init__(self, error) -> None:
         self.error = error
-        self.message = f"Failed to parse queue request. Error: {error}"
+        self.message = f"Failed to parse queue request with {error} error."
         super().__init__(self.message)
