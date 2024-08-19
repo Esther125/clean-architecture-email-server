@@ -49,7 +49,7 @@ class EmailRepository(SaveEmailPort):
     async def save_email(self, command: SaveEmailCommand) -> None:
         try:
             attachments_list = self.generate_attachments_list(command)
-            doc_ref = self.db.collection("emails").document()
+            doc_ref = self.db.collection("emails").document(command.email_id)
             await doc_ref.set(
                 {
                     "email_id": command.email_id,

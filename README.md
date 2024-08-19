@@ -10,9 +10,13 @@ docker compose up
 python -m unittest
 ```
 
-#### Test save_email function in persistence adapter with firestore
-```
+#### Test functions in persistence adapter with firestore
+```python
+# Save Email
 python -m test.adapter.outward.persistence.test_email_repository_with_firestore
+
+# Update Email state
+python -m test.adapter.outward.persistence.test_update_email_state_adapter_with_firestore
 ```
 
 ### System Design Diagram
