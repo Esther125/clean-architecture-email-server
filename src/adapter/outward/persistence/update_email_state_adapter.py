@@ -1,4 +1,5 @@
 import os
+import logging
 from google.cloud import firestore
 from google.cloud.firestore_v1 import FieldFilter
 
@@ -9,6 +10,8 @@ from src.app.port.outward.update_email_state.update_email_state_command import (
 from src.app.port.outward.update_email_state.update_email_state_port import (
     UpdateEmailStatePort,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class UpdateEmailStateAdapter(UpdateEmailStatePort):
@@ -24,3 +27,6 @@ class UpdateEmailStateAdapter(UpdateEmailStatePort):
             .stream()
         )
         await doc_ref.update({"is_sent": command.is_sent})
+        logger.info(
+            f"Successfully update the email state. (Email ID: {command.email_id})"
+        )

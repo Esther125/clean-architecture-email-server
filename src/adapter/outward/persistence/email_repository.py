@@ -1,9 +1,12 @@
 import os
+import logging
 from dotenv import load_dotenv
 from google.cloud import firestore
 
 from src.app.port.outward.save_email.save_email_command import SaveEmailCommand
 from src.app.port.outward.save_email.save_email_port import SaveEmailPort
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -38,4 +41,7 @@ class EmailRepository(SaveEmailPort):
                 "content": command.content,
                 "attachments": attachments_list,
             }
+        )
+        logger.info(
+            f"Successfully save the email to Firestore. (Email ID: {command.email_id})"
         )
