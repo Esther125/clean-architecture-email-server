@@ -15,11 +15,15 @@ load_dotenv()
 class EmailRepository(SaveEmailPort):
     def __init__(self) -> None:
         self.credentials = service_account.Credentials.from_service_account_file(
-            os.getenv("GCP_SERVICE_ACCOUNT_SECRET_PATH")
+            os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
         )
         self.project_id = os.getenv("GCP_PROJECT_ID")
         self.database_id = os.getenv("GCP_FIRESTORE_DATABASE_ID")
-        self.db = firestore.AsyncClient(self.project_id, self.database_id)
+        self.db = firestore.AsyncClient(
+            project=self.project_id,
+            database=self.database_id,
+            credentials=self.credentials,
+        )
 
     async def save_email(self, command: SaveEmailCommand) -> None:
         attachments_list = (

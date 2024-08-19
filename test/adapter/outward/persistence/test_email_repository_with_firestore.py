@@ -13,7 +13,7 @@ async def test_save_email():
     )
 
     test_command = SaveEmailCommand(
-        email_id="test-id-123",
+        email_id="test-id",
         receivers=["test@example.com"],
         subject="Test Subject",
         content="This is a test email.",
@@ -21,7 +21,7 @@ async def test_save_email():
     )
 
     await email_repo.save_email(test_command)
-    print("Email Record has been saved successfully. (ID: {test_command.email_id})")
+    print(f"Email Record has been saved successfully. (ID: {test_command.email_id})")
 
 
 if __name__ == "__main__":
