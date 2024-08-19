@@ -25,12 +25,23 @@ class UpdateEmailStateAdapter(UpdateEmailStatePort):
         self.db = firestore.AsyncClient(self.project_id, self.database_id)
 
     async def update_state(self, command: UpdateEmailStateCommand) -> None:
-        doc_ref = (
-            self.db.collection("emails")
-            .where(filter=FieldFilter("email_id", "==", command.email_id))
-            .stream()
-        )
-        await doc_ref.update({"is_sent": command.is_sent})
-        logger.info(
-            f"Successfully update the email state. (Email ID: {command.email_id})"
-        )
+        try:
+            doc_ref = (
+                self.db.collection("emails")
+                .where(filter=FieldFilter("email_id", "==", command.email_id))
+                .stream()
+            )
+            await doc_ref.update({"is_sent": command.is_sent})
+            logger.info(
+                f"Successfully update the email state. (Email ID: {command.email_id})"
+            )
+        except Exception as error:
+            raise FailedToUpdateEmailStateInFirestoreError(command.email_id, error)
+
+
+class FailedToUpdateEmailStateInFirestoreError(Exception):
+    def __int__(self, email_id, error) -> None:
+        self.email_id = email_id
+        self.error = error
+        self.message = f"Failed to update email state in Firestore. (ID: {email_id}) Error: {error}"
+        super().__init__(self.message)
