@@ -15,6 +15,7 @@ class SaveEmailCommand:
         attachments: Optional[List[Attachment]] = None,
     ):
         self.__email_id = email_id
+        self.__is_sent = False
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
@@ -23,6 +24,10 @@ class SaveEmailCommand:
     @property
     def email_id(self) -> str:
         return self.__email_id
+
+    @property
+    def is_sent(self) -> bool:
+        return self.__is_sent
 
     @property
     def receivers(self) -> List[EmailStr]:

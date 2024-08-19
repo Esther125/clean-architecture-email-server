@@ -32,6 +32,7 @@ class EmailRepository(SaveEmailPort):
         await doc_ref.set(
             {
                 "email_id": command.email_id,
+                "is_sent": command.is_sent,
                 "receivers": command.receivers,
                 "subject": command.subject,
                 "content": command.content,
