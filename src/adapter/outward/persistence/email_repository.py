@@ -43,8 +43,8 @@ class EmailRepository(SaveEmailPort):
                 else []
             )
             return attachments_list
-        except Exception as error:
-            raise FailedToGenerateAttachmentsListError(error)
+        except Exception:
+            raise
 
     async def save_email(self, command: SaveEmailCommand) -> None:
         try:
@@ -65,13 +65,6 @@ class EmailRepository(SaveEmailPort):
             )
         except Exception as error:
             raise FailedToSaveEmailToFirestoreError(command.email_id, error)
-
-
-class FailedToGenerateAttachmentsListError(Exception):
-    def __int__(self, error) -> None:
-        self.error = error
-        self.message = f"Failed to generate attachments list. Error: {error}"
-        super().__init__(self.message)
 
 
 class FailedToSaveEmailToFirestoreError(Exception):
