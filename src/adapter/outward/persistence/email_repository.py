@@ -1,5 +1,6 @@
 import os
 import logging
+from typing import Dict, List
 from dotenv import load_dotenv
 from google.oauth2 import service_account
 from google.cloud import firestore
@@ -25,31 +26,59 @@ class EmailRepository(SaveEmailPort):
             credentials=self.credentials,
         )
 
-    async def save_email(self, command: SaveEmailCommand) -> None:
-        attachments_list = (
-            [
-                {
-                    "filename": attachment.filename,
-                    "filetype": attachment.filetype,
-                    "blobname": attachment.blobname,
-                }
-                for attachment in command.attachments
-            ]
-            if command.attachments
-            else []
-        )
+    def generate_attachments_list(
+        self, command: SaveEmailCommand
+    ) -> List[Dict[str, str]]:
+        try:
+            attachments_list = (
+                [
+                    {
+                        "filename": attachment.filename,
+                        "filetype": attachment.filetype,
+                        "blobname": attachment.blobname,
+                    }
+                    for attachment in command.attachments
+                ]
+                if command.attachments
+                else []
+            )
+            return attachments_list
+        except Exception as error:
+            raise FailedToGenerateAttachmentsListError(error)
 
-        doc_ref = self.db.collection("emails").document()
-        await doc_ref.set(
-            {
-                "email_id": command.email_id,
-                "is_sent": command.is_sent,
-                "receivers": command.receivers,
-                "subject": command.subject,
-                "content": command.content,
-                "attachments": attachments_list,
-            }
+    async def save_email(self, command: SaveEmailCommand) -> None:
+        try:
+            attachments_list = self.generate_attachments_list(command)
+            doc_ref = self.db.collection("emails").document()
+            await doc_ref.set(
+                {
+                    "email_id": command.email_id,
+                    "is_sent": command.is_sent,
+                    "receivers": command.receivers,
+                    "subject": command.subject,
+                    "content": command.content,
+                    "attachments": attachments_list,
+                }
+            )
+            logger.info(
+                f"Successfully save the email to Firestore. (Email ID: {command.email_id})"
+            )
+        except Exception as error:
+            raise FailedToSaveEmailToFirestoreError(command.email_id, error)
+
+
+class FailedToGenerateAttachmentsListError(Exception):
+    def __int__(self, error) -> None:
+        self.error = error
+        self.message = f"Failed to generate attachments list. Error: {error}"
+        super().__init__(self.message)
+
+
+class FailedToSaveEmailToFirestoreError(Exception):
+    def __int__(self, email_id, error) -> None:
+        self.email_id = email_id
+        self.error = error
+        self.message = (
+            f"Failed to save email to Firestore. (ID: {email_id}) Error: {error}"
         )
-        logger.info(
-            f"Successfully save the email to Firestore. (Email ID: {command.email_id})"
-        )
+        super().__init__(self.message)
