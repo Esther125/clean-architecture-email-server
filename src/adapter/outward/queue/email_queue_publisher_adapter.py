@@ -1,10 +1,13 @@
 import json
 import os
+import logging
 from dotenv import load_dotenv
 from google.cloud import pubsub_v1
 
 from src.app.port.outward.queue_email.queue_email_command import QueueEmailCommand
 from src.app.port.outward.queue_email.queue_email_port import QueueEmailPort
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -35,7 +38,7 @@ class EmailQueuePublisherAdapter(QueueEmailPort):
             email_message = self.generate_email_message(command)
             future = self.publisher.publish(self.topic_path, email_message)
             message_id = future.result()
-            print(
+            logger.info(
                 f"Successfully published the email message (Message ID: {message_id}) to pub/sub."
             )
         except Exception as error:
