@@ -1,6 +1,7 @@
 import os
 import logging
 from google.cloud import firestore
+from google.oauth2 import service_account
 from google.cloud.firestore_v1 import FieldFilter
 
 
@@ -16,6 +17,9 @@ logger = logging.getLogger(__name__)
 
 class UpdateEmailStateAdapter(UpdateEmailStatePort):
     def __init__(self) -> None:
+        self.credentials = service_account.Credentials.from_service_account_file(
+            os.getenv("GCP_SERVICE_ACCOUNT_SECRET_PATH")
+        )
         self.project_id = os.getenv("GCP_PROJECT_ID")
         self.database_id = os.getenv("GCP_FIRESTORE_DATABASE_ID")
         self.db = firestore.AsyncClient(self.project_id, self.database_id)

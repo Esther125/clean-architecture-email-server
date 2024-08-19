@@ -1,6 +1,7 @@
 import os
 import logging
 from dotenv import load_dotenv
+from google.oauth2 import service_account
 from google.cloud import firestore
 
 from src.app.port.outward.save_email.save_email_command import SaveEmailCommand
@@ -13,6 +14,9 @@ load_dotenv()
 
 class EmailRepository(SaveEmailPort):
     def __init__(self) -> None:
+        self.credentials = service_account.Credentials.from_service_account_file(
+            os.getenv("GCP_SERVICE_ACCOUNT_SECRET_PATH")
+        )
         self.project_id = os.getenv("GCP_PROJECT_ID")
         self.database_id = os.getenv("GCP_FIRESTORE_DATABASE_ID")
         self.db = firestore.AsyncClient(self.project_id, self.database_id)
