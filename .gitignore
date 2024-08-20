@@ -2,3 +2,4 @@
 *.cpython*
 .env
 six*
+secrets/

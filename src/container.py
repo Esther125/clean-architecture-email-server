@@ -17,7 +17,10 @@ from src.app.domain.service.send_and_update_email_state.send_and_update_email_st
 
 class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
-        modules=["src.adapter.inward.web.send_email.send_email_controller"]
+        modules=[
+            "src.adapter.inward.web.send_email.queue_email_request_controller",
+            "src.adapter.inward.web.send_email.user_email_request_controller",
+        ]
     )
     config = providers.Configuration()
     save_email_adapter = providers.Factory(
