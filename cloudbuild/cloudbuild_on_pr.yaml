@@ -13,6 +13,6 @@ steps:
   args: ["mypy", "--explicit-package-bases", "src", "test"]
 - id: "run test case"
   name: "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:${_PR_NUMBER}"
-  args: ["python", "-m", "unittest"]
+  args: ["python", "-m", "unittest", "discover", "-s", "test/unit"]
 options:
   logging: CLOUD_LOGGING_ONLY

@@ -14,6 +14,7 @@ pre-commit = "^3.8.0"
 ruff = "^0.5.5"
 dependency-injector = "^4.41.0"
 httpx = "^0.27.0"
+google-cloud-pubsub = "^2.23.0"
 
 
 [tool.poetry.group.dev.dependencies]
