@@ -24,29 +24,21 @@ class TestPubSubIntegration(unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_publish_message(self):
-        try:
-            command = QueueEmailCommand(
-                email_id="test-id",
-                receivers=["test@gmail.com"],
-                subject="Test Subject",
-                content="Test Content",
-            )
-            await self.adapter.queue_email(command)
-            response = self.subscriber.pull(
-                subscription=self.subscription_path, max_messages=1, timeout=10
-            )
-            messages = response.received_messages
-
-            self.assertEqual(len(messages), 1)
-
-        except Exception as e:
-            print(f"Failed: {e}")
+        command = QueueEmailCommand(
+            email_id="test-id",
+            receivers=["test@gmail.com"],
+            subject="Test Subject",
+            content="Test Content",
+        )
+        await self.adapter.queue_email(command)
+        response = self.subscriber.pull(
+            subscription=self.subscription_path, max_messages=1, timeout=10
+        )
+        messages = response.received_messages
+        assert len(messages) == 1
 
     def tearDown(self):
-        try:
-            self.publisher.delete_topic(request={"topic": self.topic_path})
-            self.subscriber.delete_subscription(
-                request={"subscription": self.subscription_path}
-            )
-        except Exception as e:
-            print(f"Cleanup failed: {e}")
+        self.publisher.delete_topic(request={"topic": self.topic_path})
+        self.subscriber.delete_subscription(
+            request={"subscription": self.subscription_path}
+        )
