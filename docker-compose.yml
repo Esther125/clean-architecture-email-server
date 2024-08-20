@@ -7,3 +7,18 @@ services:
       - "8080:8080" 
     volumes:
       - .:/data
+    depends_on:
+      - emulator
+
+  emulator:
+    image: google/cloud-sdk:emulators
+    ports: 
+      - "8085:8085"
+    entrypoint: /bin/bash -c
+    command: >
+      "gcloud beta emulators pubsub start 
+      --project=${GCP_PROJECT_ID} 
+      --host-port='0.0.0.0:8085'" 
+
+
+  

@@ -11,16 +11,16 @@ Using FastAPI command:
 fastapi dev src/main.py --port 8080 
 ```
 
-### Run Tests
+### Tests
 
-#### Run all unittests
+#### Run unittests
 ```python
-python -m unittest
+python -m unittest discover -s test/unit
 ```
 
-#### Test publish function in queue adapter with pub/sub
+#### Run integration tests
 ```
-python -m test.adapter.outward.queue.test_queue_publisher_with_pub_sub
+python -m unittest discover -s test/integration
 ```
 
 ### System Design Diagram
