@@ -1,9 +1,6 @@
-import os
 import logging
-from google.cloud import firestore
-from google.oauth2 import service_account
 
-
+from src.adapter.outward.persistence.email_repository import EmailRepository
 from src.app.port.outward.update_email_state.update_email_state_command import (
     UpdateEmailStateCommand,
 )
@@ -15,21 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class UpdateEmailStateAdapter(UpdateEmailStatePort):
-    def __init__(self) -> None:
-        self.credentials = service_account.Credentials.from_service_account_file(
-            os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-        )
-        self.project_id = os.getenv("GCP_PROJECT_ID")
-        self.database_id = os.getenv("GCP_FIRESTORE_DATABASE_ID")
-        self.db = firestore.AsyncClient(
-            project=self.project_id,
-            database=self.database_id,
-            credentials=self.credentials,
-        )
+    def __init__(self, repository: EmailRepository) -> None:
+        self.repository = repository
 
     async def update_state(self, command: UpdateEmailStateCommand) -> None:
         try:
-            doc_ref = self.db.collection("emails").document(command.email_id)
+            doc_ref = self.repository.document(command.email_id)  # type: ignore[attr-defined]
             await doc_ref.set({"is_sent": command.is_sent}, merge=True)
             logger.info(
                 f"Successfully update the email state. (Email ID: {command.email_id})"

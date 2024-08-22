@@ -1,6 +1,7 @@
 from dependency_injector import containers, providers
 from src.adapter.outward.integration.send_email_adapter import SendEmailAdapter
-from src.adapter.outward.persistence.email_repository import EmailRepository
+from src.adapter.outward.persistence.email_repository import DBClient, EmailRepository
+from src.adapter.outward.persistence.save_email_adapter import SaveEmailAdapter
 from src.adapter.outward.persistence.update_email_state_adapter import (
     UpdateEmailStateAdapter,
 )
@@ -23,11 +24,15 @@ class Container(containers.DeclarativeContainer):
         ]
     )
     config = providers.Configuration()
+    db_client = providers.Factory(
+        DBClient,
+    )
+    email_repository = providers.Factory(EmailRepository, client=db_client)
     save_email_adapter = providers.Factory(
-        EmailRepository,
+        SaveEmailAdapter, repository=email_repository
     )
     queue_email_adapter = providers.Factory(
-        EmailQueuePublisherAdapter,
+        EmailQueuePublisherAdapter, email_repository=email_repository
     )
     queue_and_save_email_service = providers.Factory(
         QueueAndSaveEmailService,
@@ -39,7 +44,7 @@ class Container(containers.DeclarativeContainer):
         SendEmailAdapter,
     )
     update_email_state_adapter = providers.Factory(
-        UpdateEmailStateAdapter,
+        UpdateEmailStateAdapter, repository=email_repository
     )
     send_and_update_email_state_service = providers.Factory(
         SendAndUpdateEmailStateService,
