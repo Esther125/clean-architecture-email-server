@@ -1,24 +1,30 @@
 # milecoolab-email-server
 
 ### Start the Email Server 
+Using docker compose:
 ```python
 docker compose up
 ```
 
-### Run Tests
-```python
-python -m unittest
+Using FastAPI command:
+```
+fastapi dev src/main.py --port 8080 
 ```
 
-#### Test functions in persistence adapter with firestore
-```python
-# Save Email
-python -m test.adapter.outward.persistence.test_email_repository_with_firestore
+### Tests
 
-# Update Email state
-python -m test.adapter.outward.persistence.test_update_email_state_adapter_with_firestore
+#### Run unittests
+```python
+python -m unittest discover -s test/unit
+```
+
+#### Run integration tests
+```
+python -m unittest discover -s test/integration
 ```
 
 ### System Design Diagram
 ![Example Image](./images/system_design_diagram.png)
 
+### Documents
+For detailed documentation, please refer to the [Document](./docs/document.pdf).
