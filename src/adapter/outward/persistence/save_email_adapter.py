@@ -35,19 +35,16 @@ class SaveEmailAdapter(SaveEmailPort):
     async def save_email(self, command: SaveEmailCommand) -> None:
         try:
             attachments_list = self.generate_attachments_list(command)
-            doc_ref = self.repository.document(command.email_id)  # type: ignore[attr-defined]
-            await doc_ref.set(
-                {
+            await self.repository.save_document(
+                document_id=command.email_id,
+                data={
                     "email_id": command.email_id,
                     "is_sent": command.is_sent,
                     "receivers": command.receivers,
                     "subject": command.subject,
                     "content": command.content,
                     "attachments": attachments_list,
-                }
-            )
-            logger.info(
-                f"Successfully save the email to Firestore. (Email ID: {command.email_id})"
+                },
             )
         except Exception as error:
             raise FailedToSaveEmailToFirestoreError(command.email_id, error)

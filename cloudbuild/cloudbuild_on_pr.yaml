@@ -5,14 +5,6 @@ steps:
 - id: "push dev image"
   name: "gcr.io/cloud-builders/docker"
   args: ["push", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:${_PR_NUMBER}"]
-- id: "set up service account key"
-  name: "gcr.io/cloud-builders/gcloud"
-  entrypoint: "bash"
-  args:
-  - "-c"
-  - |
-    echo $$(gcloud secrets versions access latest --secret=GCP_SERVICE_ACCOUNT_KEY) > /workspace/service-account-key.json
-    gcloud auth activate-service-account --key-file=/workspace/service-account-key.json
 - id: "ruff"
   name: "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:${_PR_NUMBER}"
   args: ["ruff", "check", "src/","test/"]
