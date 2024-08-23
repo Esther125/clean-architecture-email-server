@@ -1,6 +1,10 @@
 # milecoolab-email-server
 
 ### Start the Email Server 
+```
+gcloud auth application-default login --impersonate-service-account email-server@tw-rd-de-milecoolab-dev.iam.gserviceaccount.com
+```
+
 Using docker compose:
 ```python
 docker compose up
@@ -20,6 +24,7 @@ python -m unittest discover -s test/unit
 
 #### Run integration tests
 ```
+docker compose up
 python -m unittest discover -s test/integration
 ```
 
