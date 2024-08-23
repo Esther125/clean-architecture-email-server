@@ -9,7 +9,7 @@ class EmailRepository:
         self.client = client
 
     def get_document(self, document_id: str):
-        return self.client.collection("emails").document(document_id)  # type: ignore[attr-defined]
+        return self.client.collection("email").document(document_id)
 
     async def save_document(self, document_id: str, data: dict):
         try:

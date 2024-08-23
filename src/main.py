@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 from fastapi import FastAPI
 
 from src.container import Container
@@ -14,11 +15,15 @@ logging.basicConfig(
 )
 
 
-def create_app() -> FastAPI:
+class CustomFastAPI(FastAPI):
+    container: Optional[Container] = None
+
+
+def create_app() -> CustomFastAPI:
     container = Container()
 
-    app = FastAPI()
-    app.container = container  # type: ignore[attr-defined]
+    app = CustomFastAPI()
+    app.container = container
     app.include_router(user_email_request_controller.router)
     app.include_router(queue_email_request_controller.router)
     return app
