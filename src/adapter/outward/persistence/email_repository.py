@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 class EmailRepository:
     def __init__(self, client: DBClient) -> None:
         self.client = client
-        return client.collection("emails")  # type: ignore[attr-defined]
 
     def get_document(self, document_id: str):
         return self.client.collection("emails").document(document_id)  # type: ignore[attr-defined]

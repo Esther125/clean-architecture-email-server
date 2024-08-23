@@ -42,3 +42,4 @@ class TestPubSubIntegration(unittest.IsolatedAsyncioTestCase):
         self.subscriber.delete_subscription(
             request={"subscription": self.subscription_path}
         )
+        os.environ.pop("PUBSUB_EMULATOR_HOST", None)
