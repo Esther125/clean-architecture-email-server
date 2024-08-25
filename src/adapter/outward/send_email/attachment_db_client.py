@@ -8,11 +8,11 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-class AttachmentDBClient(Client):
+class AttachmentDBClient:
     def __init__(self) -> None:
         self.client = Client()
         self.attachment_bucket_name = os.getenv("GCP_CLOUD_STORAGE_BUCKET_NAME")
-        self.attachment_bucket = self.bucket(self.attachment_bucket_name)
+        self.attachment_bucket = self.client.bucket(self.attachment_bucket_name)
 
     def download_attachment(self, blob_name: str) -> bytes:
         try:

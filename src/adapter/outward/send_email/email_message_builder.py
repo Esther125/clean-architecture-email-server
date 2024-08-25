@@ -32,7 +32,7 @@ class EmailMessageBuilder:
             email_msg["Subject"] = command.subject
             email_msg.set_content(command.content)
 
-            if not command.attachments:
+            if len(command.attachments) != 0:
                 self.__add_attachments(email_msg, command.attachments)
             return email_msg
         except Exception as error:
