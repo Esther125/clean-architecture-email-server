@@ -8,7 +8,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-class AttachmentDBClient:
+class StorageClient:
     def __init__(self) -> None:
         self.client = Client()
         self.attachment_bucket_name = os.getenv("GCP_CLOUD_STORAGE_BUCKET_NAME")

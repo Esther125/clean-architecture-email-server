@@ -2,18 +2,18 @@ import os
 from email.message import EmailMessage
 from typing import List
 
-from src.adapter.outward.send_email.attachment_db_client import AttachmentDBClient
+from src.adapter.outward.send_email.storage_client import StorageClient
 from src.app.port.outward.send_email.send_email_command import SendEmailCommand
 
 
 class EmailMessageBuilder:
     def __init__(self) -> None:
-        self.attachment_db_client = AttachmentDBClient()
+        self.storage_client = StorageClient()
         self.sender = str(os.getenv("EMAIL_SENDER"))
 
     def __add_attachments(self, email_msg: EmailMessage, attachments: List) -> None:
         for attachment in attachments:
-            file_content = self.attachment_db_client.download_attachment(
+            file_content = self.storage_client.download_attachment(
                 blob_name=attachment.blobname
             )
             maintype, subtype = attachment.filetype.split("/", 1)

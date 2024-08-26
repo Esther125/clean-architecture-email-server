@@ -1,7 +1,7 @@
 from email.message import EmailMessage
 from unittest import TestCase, mock
 
-from src.adapter.outward.send_email.attachment_db_client import AttachmentDBClient
+from src.adapter.outward.send_email.storage_client import StorageClient
 from src.adapter.outward.send_email.email_message_builder import (
     EmailMessageBuilder,
     FailedToBuildEmailMessage,
@@ -13,8 +13,8 @@ from src.app.port.outward.send_email.send_email_command import SendEmailCommand
 class TestEmailMessageBuilder(TestCase):
     def setUp(self):
         self.message_builder = EmailMessageBuilder()
-        self.attachment_db_client = mock.Mock(spec=AttachmentDBClient)
-        self.message_builder.attachment_db_client = self.attachment_db_client
+        self.storage_client = mock.Mock(spec=StorageClient)
+        self.message_builder.storage_client = self.storage_client
 
     def test_build_email_message_success(self):
         command = SendEmailCommand(
