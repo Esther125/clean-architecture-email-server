@@ -5,7 +5,7 @@ from src.app.port.inward.query_email_request.query_email_request_command import 
 )
 
 
-class QueryEmailRequestPort(ABC):
+class QueryEmailRequestUseCase(ABC):
     @abstractmethod
     async def query_email_request(self, command: QueryEmailRequestCommand) -> None:
         raise NotImplementedError
