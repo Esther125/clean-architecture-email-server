@@ -1,4 +1,3 @@
-from asyncio import to_thread
 import os
 import smtplib
 from dotenv import load_dotenv
@@ -20,7 +19,7 @@ class SendEmailAdapter(SendEmailPort):
 
     async def send_email(self, command: SendEmailCommand) -> None:
         try:
-            email_msg = await to_thread(self.email_builder.build_email_message, command)
+            email_msg = await self.email_builder.build_email_message(command)
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as smtp:
                 smtp.starttls()
                 smtp.login(self.sender, self.password)

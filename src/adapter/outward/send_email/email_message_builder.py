@@ -1,3 +1,4 @@
+from asyncio import to_thread
 import os
 from email.message import EmailMessage
 from typing import List
@@ -11,10 +12,12 @@ class EmailMessageBuilder:
         self.storage_client = StorageClient()
         self.sender = str(os.getenv("EMAIL_SENDER"))
 
-    def __add_attachments(self, email_msg: EmailMessage, attachments: List) -> None:
+    async def __add_attachments(
+        self, email_msg: EmailMessage, attachments: List
+    ) -> None:
         for attachment in attachments:
-            file_content = self.storage_client.download_attachment(
-                blob_name=attachment.blobname
+            file_content = to_thread(
+                self.storage_client.download_attachment, blob_name=attachment.blobname
             )
             maintype, subtype = attachment.filetype.split("/", 1)
             email_msg.add_attachment(
@@ -24,7 +27,7 @@ class EmailMessageBuilder:
                 filename=attachment.filename,
             )
 
-    def build_email_message(self, command: SendEmailCommand) -> EmailMessage:
+    async def build_email_message(self, command: SendEmailCommand) -> EmailMessage:
         try:
             email_msg = EmailMessage()
             email_msg["From"] = self.sender
@@ -33,7 +36,7 @@ class EmailMessageBuilder:
             email_msg.set_content(command.content)
 
             if len(command.attachments) != 0:
-                self.__add_attachments(email_msg, command.attachments)
+                await self.__add_attachments(email_msg, command.attachments)
             return email_msg
         except Exception as error:
             raise FailedToBuildEmailMessage(error)
