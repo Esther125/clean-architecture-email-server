@@ -15,8 +15,8 @@ class TestSendEmailAdpater(IsolatedAsyncioTestCase):
         self.send_email_adapter.email_builder = self.email_builder
 
     async def test_send_email_failed(self) -> None:
-        self.email_builder.build_email_message.side_effect = Exception(
-            "Failed to build email message."
+        self.email_builder.build_email_message = mock.AsyncMock(
+            side_effect=Exception("Failed to build email message.")
         )
         with self.assertRaises(FailedToSendEmailWithSMTPServer):
             command = SendEmailCommand(

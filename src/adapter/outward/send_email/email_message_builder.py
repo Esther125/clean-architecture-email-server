@@ -1,4 +1,5 @@
 from asyncio import to_thread
+import asyncio
 import os
 from email.message import EmailMessage
 from typing import List
@@ -12,13 +13,20 @@ class EmailMessageBuilder:
         self.storage_client = StorageClient()
         self.sender = str(os.getenv("EMAIL_SENDER"))
 
+    async def async_download_attachment(self, blob_name):
+        return await to_thread(
+            self.storage_client.download_attachment, blob_name=blob_name
+        )
+
     async def __add_attachments(
         self, email_msg: EmailMessage, attachments: List
     ) -> None:
-        for attachment in attachments:
-            file_content = to_thread(
-                self.storage_client.download_attachment, blob_name=attachment.blobname
-            )
+        download_tasks = [
+            self.async_download_attachment(attachment.blobname)
+            for attachment in attachments
+        ]
+        downloaded_files = await asyncio.gather(*download_tasks)
+        for file_content, attachment in zip(downloaded_files, attachments):
             maintype, subtype = attachment.filetype.split("/", 1)
             email_msg.add_attachment(
                 file_content,
