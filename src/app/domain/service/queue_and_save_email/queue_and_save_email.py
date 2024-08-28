@@ -35,6 +35,7 @@ class QueueAndSaveEmailService(QueueAndSaveEmailUseCase):
         try:
             save_command = SaveEmailCommand(
                 email_id=command.email_id,
+                request_time=command.request_time,
                 receivers=command.receivers,
                 subject=command.subject,
                 content=command.content,

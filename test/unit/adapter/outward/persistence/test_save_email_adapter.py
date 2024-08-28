@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 
@@ -17,6 +18,7 @@ class TestSaveEmailAdapter(IsolatedAsyncioTestCase):
 
         command = SaveEmailCommand(
             email_id="test-id",
+            request_time=datetime(2023, 12, 5, 12, 0, 0),
             receivers=["test@gmail.com"],
             subject="Test Subject",
             content="Test content",
@@ -46,6 +48,7 @@ class TestSaveEmailAdapter(IsolatedAsyncioTestCase):
         with self.assertRaises(FailedToSaveEmailToFirestoreError) as context:
             command = SaveEmailCommand(
                 email_id="test-id",
+                request_time=datetime(2023, 12, 5, 12, 0, 0),
                 receivers=["test@gmail.com"],
                 subject="Test Subject",
                 content="Test content",
