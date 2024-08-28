@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 from pydantic import EmailStr
 
 
@@ -12,10 +12,10 @@ class FilterEmailCommand:
         sent_time_start: Optional[datetime] = None,
         sent_time_end: Optional[datetime] = None,
         is_sent: Optional[bool] = None,
-        receivers: Optional[List[EmailStr]] = None,
+        receivers: Optional[EmailStr] = None,
         subject: Optional[str] = None,
         content: Optional[str] = None,
-        attachments_blobname: Optional[List[str]] = None,
+        attachments_blobname: Optional[str] = None,
     ):
         self.__email_id = email_id
         self.__request_time_start = request_time_start
@@ -23,7 +23,7 @@ class FilterEmailCommand:
         self.__sent_time_start = sent_time_start
         self.__sent_time_end = sent_time_end
         self.__is_sent = is_sent
-        self.__receivers = receivers or []
+        self.__receivers = receivers
         self.__subject = subject
         self.__content = content
         self.__attachments_blobname = attachments_blobname
@@ -53,7 +53,7 @@ class FilterEmailCommand:
         return self.__is_sent
 
     @property
-    def receivers(self) -> Optional[List[EmailStr]]:
+    def receivers(self) -> Optional[EmailStr]:
         return self.__receivers
 
     @property
@@ -65,5 +65,5 @@ class FilterEmailCommand:
         return self.__content
 
     @property
-    def attachments_blobname(self) -> Optional[List[str]]:
+    def attachments_blobname(self) -> Optional[str]:
         return self.__attachments_blobname
