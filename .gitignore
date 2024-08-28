@@ -2,4 +2,4 @@
 *.cpython*
 .env
 six*
-secrets/
+app.log

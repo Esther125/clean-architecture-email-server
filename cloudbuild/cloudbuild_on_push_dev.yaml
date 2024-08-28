@@ -1,0 +1,27 @@
+steps:
+- id: "build dev image"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["build","--target", "development","-t", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-testing-${COMMIT_SHA}", "."]
+- id: "push dev image"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["push", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-testing-${COMMIT_SHA}"]
+- id: "ruff"
+  name: "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-testing-${COMMIT_SHA}"
+  args: ["ruff", "check", "src/","tests/"]
+- id: "mypy"
+  name: "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-testing-${COMMIT_SHA}"
+  args: ["mypy", "--explicit-package-bases", "src", "tests"]
+- id: "run test case"
+  name: "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-testing-${COMMIT_SHA}"
+  args: ["python", "-m", "unittest", "discover", "-s", "test/unit"]
+- id: "build prod image"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["build","--target", "production","-t", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-${COMMIT_SHA}", "."]
+- id: "push prod image"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["push", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-${COMMIT_SHA}"]
+- name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+  entrypoint: gcloud
+  args: ["run", "deploy", "milecoolab-dev-email-server", "--image", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-${COMMIT_SHA}", "--region", "asia-east1"]
+options:
+  logging: CLOUD_LOGGING_ONLY
