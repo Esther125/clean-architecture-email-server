@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from pydantic import EmailStr
@@ -9,6 +10,7 @@ class SaveEmailCommand:
     def __init__(
         self,
         email_id: str,
+        request_time: datetime,
         receivers: List[EmailStr],
         subject: str,
         content: str,
@@ -16,6 +18,8 @@ class SaveEmailCommand:
     ):
         self.__email_id = email_id
         self.__is_sent = False
+        self.__request_time = request_time
+        self.__sent_time = None
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
@@ -28,6 +32,14 @@ class SaveEmailCommand:
     @property
     def is_sent(self) -> bool:
         return self.__is_sent
+
+    @property
+    def request_time(self) -> datetime:
+        return self.__request_time
+
+    @property
+    def sent_time(self) -> datetime | None:
+        return self.__sent_time
 
     @property
     def receivers(self) -> List[EmailStr]:

@@ -18,7 +18,8 @@ class UpdateEmailStateAdapter(UpdateEmailStatePort):
     async def update_state(self, command: UpdateEmailStateCommand) -> None:
         try:
             await self.repository.update_document(
-                document_id=command.email_id, data={"is_sent": command.is_sent}
+                document_id=command.email_id,
+                data={"is_sent": command.is_sent, "sent_time": command.sent_time},
             )
         except Exception as error:
             raise FailedToUpdateEmailStateInFirestoreError(command.email_id, error)

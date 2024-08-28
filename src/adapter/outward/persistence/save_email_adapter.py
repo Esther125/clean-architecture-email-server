@@ -40,6 +40,8 @@ class SaveEmailAdapter(SaveEmailPort):
                 data={
                     "email_id": command.email_id,
                     "is_sent": command.is_sent,
+                    "request_time": command.request_time,
+                    "sent_time": command.sent_time,
                     "receivers": command.receivers,
                     "subject": command.subject,
                     "content": command.content,
