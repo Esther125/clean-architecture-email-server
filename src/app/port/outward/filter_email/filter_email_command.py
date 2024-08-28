@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import EmailStr
 
 
-class QueryEmailRequestCommand:
+class FilterEmailCommand:
     def __init__(
         self,
         email_id: Optional[str] = None,
@@ -53,7 +53,7 @@ class QueryEmailRequestCommand:
         return self.__is_sent
 
     @property
-    def receivers(self) -> List[EmailStr]:
+    def receivers(self) -> Optional[List[EmailStr]]:
         return self.__receivers
 
     @property
