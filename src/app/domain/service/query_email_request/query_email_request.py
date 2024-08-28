@@ -20,10 +20,15 @@ class QueryEmailRequestService(QueryEmailRequestUseCase):
         try:
             command = QueryEmailCommand(
                 email_id=request_command.email_id,
+                request_time_start=request_command.request_time_start,
+                request_time_end=request_command.request_time_end,
+                sent_time_start=request_command.sent_time_start,
+                sent_time_end=request_command.sent_time_end,
+                is_sent=request_command.is_sent,
                 receivers=request_command.receivers,
                 subject=request_command.subject,
                 content=request_command.content,
-                attachments=request_command.attachments,
+                attachments_blobname=request_command.attachments_blobname,
             )
             result_emails = await self.__query_email_adapter.query_email(command)
             return result_emails
