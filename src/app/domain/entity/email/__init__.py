@@ -15,15 +15,18 @@ class Email:
     def __init__(
         self,
         email_id: str,
+        is_sent: bool,
+        request_time: datetime,
+        sent_time: datetime | None,
         receivers: List[EmailStr],
         subject: str,
         content: str,
         attachments: Optional[List[Attachment]] = None,
     ):
         self.__email_id = email_id
-        self.__is_sent = False
-        self.__request_time = datetime.now()
-        self.__sent_time = None
+        self.__is_sent = is_sent
+        self.__request_time = request_time
+        self.__sent_time = sent_time
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
