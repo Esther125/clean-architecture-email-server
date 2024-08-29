@@ -1,5 +1,5 @@
 from dependency_injector import containers, providers
-from src.adapter.outward.filter_email.filter_email_adpter import FilterEmailAdapter
+from src.adapter.outward.filter_email.filter_email_adapter import FilterEmailAdapter
 from src.adapter.outward.send_email.send_email_adapter import SendEmailAdapter
 
 from src.adapter.outward.persistence.email_repository import DBClient, EmailRepository
