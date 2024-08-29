@@ -16,12 +16,17 @@ steps:
   args: ["python", "-m", "unittest", "discover", "-s", "test/unit"]
 - id: "build prod image"
   name: "gcr.io/cloud-builders/docker"
-  args: ["build","--target", "production","-t", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-${COMMIT_SHA}", "."]
+  args: ["build","--target", "production","-t", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:production-${COMMIT_SHA}", "."]
 - id: "push prod image"
   name: "gcr.io/cloud-builders/docker"
-  args: ["push", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-${COMMIT_SHA}"]
-# - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-#   entrypoint: gcloud
-#   args: ["run", "deploy", "milecoolab-dev-email-server", "--image", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:dev-${COMMIT_SHA}", "--region", "asia-east1"]
+  args: ["push", "asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:production-${COMMIT_SHA}"]
+# deploy container image to GKE
+- name: "gcr.io/cloud-builders/gke-deploy"
+  args:
+  - run
+  - --filename=/k8s
+  - image=asia-east1-docker.pkg.dev/${PROJECT_ID}/milecoolab/milecoolab-email-server:production-${COMMIT_SHA}
+  - --location=${_CLOUDSDK_COMPUTE_ZONE}
+  - --cluster=${_CLOUDSDK_CONTAINER_CLUSTER}
 options:
   logging: CLOUD_LOGGING_ONLY
