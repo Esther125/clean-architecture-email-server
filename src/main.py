@@ -2,6 +2,7 @@ import logging
 from typing import Optional
 from fastapi import FastAPI
 
+from src.adapter.inward.web.filter_email import filter_email_request_controller
 from src.container import Container
 from .adapter.inward.web.send_email import (
     user_email_request_controller,
@@ -26,6 +27,7 @@ def create_app() -> CustomFastAPI:
     app.container = container
     app.include_router(user_email_request_controller.router)
     app.include_router(queue_email_request_controller.router)
+    app.include_router(filter_email_request_controller.router)
     return app
 
 

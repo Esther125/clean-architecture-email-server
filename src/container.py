@@ -26,6 +26,7 @@ class Container(containers.DeclarativeContainer):
         modules=[
             "src.adapter.inward.web.send_email.queue_email_request_controller",
             "src.adapter.inward.web.send_email.user_email_request_controller",
+            "src.adapter.inward.web.filter_email.filter_email_request_controller",
         ]
     )
     config = providers.Configuration()

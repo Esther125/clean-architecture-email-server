@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from dependency_injector.wiring import inject, Provide
 
 from src.adapter.inward.web.filter_email.filter_email_schema import (
+    Attachment,
+    Email,
     FilterEmailRequestWebInterface,
     FilterEmailResponse,
 )
@@ -26,7 +28,7 @@ async def handle_filter_email_request(
     filter_email_request_service: FilterEmailRequestUseCase = Depends(
         Provide[Container.filter_email_request_service]
     ),
-):
+) -> FilterEmailResponse:
     try:
         filter_email_request_command = FilterEmailRequestCommand(
             email_id=filter_email_request.email_id,
@@ -40,9 +42,31 @@ async def handle_filter_email_request(
             content=filter_email_request.content,
             attachments_blobname=filter_email_request.attachments_blobname,
         )
-        result_emails = await filter_email_request_service.filter_email_request(
+        emails = await filter_email_request_service.filter_email_request(
             filter_email_request_command
         )
+        attachments_list = [
+            Attachment(
+                filename=attachment.filename,
+                filetype=attachment.filetype,
+                blobname=attachment.blobname,
+            )
+            for email in emails
+            for attachment in email.attachments
+        ]
+        result_emails = [
+            Email(
+                email_id=email.email_id,
+                is_sent=email.is_sent,
+                request_time=email.request_time,
+                sent_time=email.sent_time,
+                receivers=email.receivers,
+                subject=email.subject,
+                content=email.content,
+                attachments=attachments_list,
+            )
+            for email in emails
+        ]
         return FilterEmailResponse(
             message="Successfully filter emails.", result_emails=result_emails
         )
