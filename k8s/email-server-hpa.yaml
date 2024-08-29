@@ -1,0 +1,14 @@
+apiVersion: "autoscaling/v2"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "email-server-deployment-1-hpa-t8fw"
+  namespace: "email-server"
+  labels:
+    app: "email-server-deployment-1"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "email-server-deployment-1"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 5
