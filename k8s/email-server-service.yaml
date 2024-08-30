@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+  creationTimestamp: "2024-08-29T05:50:31Z"
+  finalizers:
+  - service.kubernetes.io/load-balancer-cleanup
+  labels:
+    app: email-server-deployment-1
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:labels:
+          .: {}
+          f:app: {}
+      f:spec:
+        f:allocateLoadBalancerNodePorts: {}
+        f:externalTrafficPolicy: {}
+        f:internalTrafficPolicy: {}
+        f:ports:
+          .: {}
+          k:{"port":8080,"protocol":"TCP"}:
+            .: {}
+            f:port: {}
+            f:protocol: {}
+            f:targetPort: {}
+        f:selector: {}
+        f:sessionAffinity: {}
+        f:type: {}
+    manager: unknown
+    operation: Update
+    time: "2024-08-29T05:50:31Z"
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:finalizers:
+          .: {}
+          v:"service.kubernetes.io/load-balancer-cleanup": {}
+      f:status:
+        f:loadBalancer:
+          f:ingress: {}
+    manager: cloud-controller-manager
+    operation: Update
+    subresource: status
+    time: "2024-08-29T05:51:10Z"
+  name: email-server-deployment-1-service
+  namespace: email-server
+  resourceVersion: "105993"
+  uid: 0d7cff68-8076-40e4-b89a-fce33f7a4b75
+spec:
+  allocateLoadBalancerNodePorts: true
+  clusterIP: 34.118.238.12
+  clusterIPs:
+  - 34.118.238.12
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - nodePort: 30875
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: email-server-deployment-1
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 34.81.200.241

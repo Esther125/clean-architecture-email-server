@@ -1,0 +1,20 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "email-server-deployment-1"
+  namespace: "email-server"
+  labels:
+    app: "email-server-deployment-1"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "email-server-deployment-1"
+  template:
+    metadata:
+      labels:
+        app: "email-server-deployment-1"
+    spec:
+      containers:
+      - name: "milecoolab-email-server-sha256-1"
+        image: "asia-east1-docker.pkg.dev/tw-rd-de-milecoolab-dev/milecoolab/milecoolab-email-server@sha256:3585364e3765f0eea05677a30337b1b1b553d40cf4a0c3c1fce601bdf1ed0a53"
