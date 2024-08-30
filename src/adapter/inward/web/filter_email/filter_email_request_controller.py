@@ -25,10 +25,18 @@ router = APIRouter(prefix="/v1")
 @inject
 async def handle_filter_email_request(
     email_id: Optional[str] = Query(None),
-    request_time_start: Optional[datetime] = Query(None),
-    request_time_end: Optional[datetime] = Query(None),
-    sent_time_start: Optional[datetime] = Query(None),
-    sent_time_end: Optional[datetime] = Query(None),
+    request_time_start: Optional[datetime] = Query(
+        None, description="example format: 2023-09-15"
+    ),
+    request_time_end: Optional[datetime] = Query(
+        None, description="example format: 2023-09-15"
+    ),
+    sent_time_start: Optional[datetime] = Query(
+        None, description="example format: 2023-09-15"
+    ),
+    sent_time_end: Optional[datetime] = Query(
+        None, description="example format: 2023-09-15"
+    ),
     is_sent: Optional[bool] = Query(None),
     receivers: Optional[EmailStr] = Query(None),
     subject: Optional[str] = Query(None),

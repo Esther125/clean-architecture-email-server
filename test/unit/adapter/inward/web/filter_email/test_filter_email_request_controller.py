@@ -22,7 +22,7 @@ class TestFilterEmailRequestEndpoint(IsolatedAsyncioTestCase):
         ), app.container.filter_email_request_service.override(
             self.mock_filter_email_request_service
         ):
-            response = self.client.get("/v1/email?is_sent=True")
+            response = self.client.get("/v1/email?request_time_start=2023-09-15")
             assert response.status_code == 200
             result = response.json()
             assert "Successfully filter emails" in result["message"]
