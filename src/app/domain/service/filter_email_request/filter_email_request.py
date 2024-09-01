@@ -28,7 +28,7 @@ class FilterEmailRequestService(FilterEmailRequestUseCase):
                 receivers=request_command.receivers,
                 subject=request_command.subject,
                 content=request_command.content,
-                attachments_blobname=request_command.attachments_blobname,
+                attachments_keyword=request_command.attachments_keyword,
             )
             result_emails = await self.__filter_email_adapter.filter_email(command)
             return result_emails

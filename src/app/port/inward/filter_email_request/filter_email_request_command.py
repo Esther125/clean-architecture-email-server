@@ -15,7 +15,7 @@ class FilterEmailRequestCommand:
         receivers: Optional[EmailStr] = None,
         subject: Optional[str] = None,
         content: Optional[str] = None,
-        attachments_blobname: Optional[str] = None,
+        attachments_keyword: Optional[str] = None,
     ):
         self.__email_id = email_id
         self.__request_time_start = request_time_start
@@ -26,7 +26,7 @@ class FilterEmailRequestCommand:
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
-        self.__attachments_blobname = attachments_blobname
+        self.__attachments_keyword = attachments_keyword
 
     @property
     def email_id(self) -> Optional[str]:
@@ -65,5 +65,5 @@ class FilterEmailRequestCommand:
         return self.__content
 
     @property
-    def attachments_blobname(self) -> Optional[str]:
-        return self.__attachments_blobname
+    def attachments_keyword(self) -> Optional[str]:
+        return self.__attachments_keyword

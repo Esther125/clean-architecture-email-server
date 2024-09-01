@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 from unittest import IsolatedAsyncioTestCase
 
 from src.app.domain.entity.email import Email
@@ -18,6 +19,9 @@ class MockFilterEmailAdapter(FilterEmailPort):
         result_emails = [
             Email(
                 email_id="test-id",
+                is_sent=False,
+                request_time=datetime(2024, 12, 12),
+                sent_time=datetime(2024, 12, 12),
                 receivers=["test@gmail.com"],
                 subject="Test Subject",
                 content="test content",
@@ -43,7 +47,7 @@ class TestFilterEmailRequest(IsolatedAsyncioTestCase):
             receivers=None,
             subject=None,
             content=None,
-            attachments_blobname=None,
+            attachments_keyword=None,
         )
 
     async def test_filter_email_request_success(self) -> None:
