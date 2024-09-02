@@ -16,7 +16,7 @@ class FilterEmailAdapter(FilterEmailPort):
         self.client = bigquery.Client()
         self.query_builder = QueryBuilder()
 
-    async def generate_result_emails(self, rows: List[dict]) -> List[Email]:
+    async def __generate_result_emails(self, rows: List[dict]) -> List[Email]:
         result_emails = []
         for row in rows:
             attachments_list = json.loads(row["attachments"])
@@ -52,7 +52,7 @@ class FilterEmailAdapter(FilterEmailPort):
             )
             query_job = self.client.query(query, job_config=query_job_config)
             rows = list(query_job.result())
-            result_emails = await self.generate_result_emails(rows)
+            result_emails = await self.__generate_result_emails(rows)
             return result_emails
         except Exception as error:
             raise FailedToFilterEmailError(error)
