@@ -59,13 +59,9 @@ async def handle_filter_email_request(
             content=content,
             attachments_keyword=attachments_keyword,
         )
-        ### TODO: return value has mistake
         emails = await filter_email_request_service.filter_email_request(
             filter_email_request_command
         )
-        ###
-        for email in emails:
-            print(email.receivers)
         attachments_list = [
             Attachment(
                 filename=attachment.filename,
