@@ -37,9 +37,7 @@ class Container(containers.DeclarativeContainer):
     save_email_adapter = providers.Factory(
         SaveEmailAdapter, repository=email_repository
     )
-    queue_email_adapter = providers.Factory(
-        EmailQueuePublisherAdapter, email_repository=email_repository
-    )
+    queue_email_adapter = providers.Factory(EmailQueuePublisherAdapter)
     queue_and_save_email_service = providers.Factory(
         QueueAndSaveEmailService,
         save_email_adapter=save_email_adapter,

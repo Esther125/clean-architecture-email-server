@@ -26,7 +26,14 @@ class EmailQueuePublisherAdapter(QueueEmailPort):
                 "receivers": command.receivers,
                 "subject": command.subject,
                 "content": command.content,
-                "attachments": command.attachments,
+                "attachments": [
+                    {
+                        "filename": attach.filename,
+                        "filetype": attach.filetype,
+                        "blobname": attach.blobname,
+                    }
+                    for attach in command.attachments
+                ],
             }
             email_message = json.dumps(email).encode("utf-8")
             return email_message
