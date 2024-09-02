@@ -21,6 +21,7 @@ class FilterEmailAdapter(FilterEmailPort):
     async def __generate_result_emails(self, rows: List[dict]) -> List[Email]:
         result_emails = []
         for row in rows:
+            receivers_list = json.loads(row["receivers"])
             attachments_list = json.loads(row["attachments"])
             result_emails.append(
                 Email(
@@ -28,7 +29,7 @@ class FilterEmailAdapter(FilterEmailPort):
                     is_sent=row["is_sent"],
                     request_time=row["request_time"],
                     sent_time=row["sent_time"],
-                    receivers=[row["receivers"]],
+                    receivers=[receiver for receiver in receivers_list],
                     subject=row["subject"],
                     content=row["content"],
                     attachments=[
