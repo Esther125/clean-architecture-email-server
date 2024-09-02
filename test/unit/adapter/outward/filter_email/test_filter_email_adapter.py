@@ -20,8 +20,8 @@ class TestFilterEmailAdapter(IsolatedAsyncioTestCase):
         )
 
     async def test_filter_email_failed(self):
-        self.filter_email_adapter.query_builder.build_query.side_effect = Exception(
-            "Failed to filter email."
+        self.filter_email_adapter.query_builder.build_query = mock.AsyncMock(
+            side_effect=Exception("Failed to filter email.")
         )
         with self.assertRaises(FailedToFilterEmailError):
             await self.filter_email_adapter.filter_email(self.command)

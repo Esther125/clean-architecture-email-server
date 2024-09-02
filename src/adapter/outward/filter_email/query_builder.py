@@ -5,6 +5,9 @@ from src.app.port.outward.filter_email.filter_email_command import FilterEmailCo
 
 
 class QueryBuilder:
+    def __init__(self):
+        self.view = os.getenv("GCP_BIG_QUERY_VIEW")
+
     async def __format_params(self, key, value):
         if key in ["subject", "content", "receivers", "attachments_keyword"]:
             return f"%{value}%"
@@ -33,8 +36,8 @@ class QueryBuilder:
                 for key in conditions
                 if getattr(command, key, None) is not None
             ]
-            view = os.getenv("GCP_BIG_QUERY_VIEW")
-            query = f"SELECT * FROM `{view}`"
+
+            query = f"SELECT * FROM `{self.view}`"
             if query_conditions:
                 query += " WHERE " + " AND ".join(query_conditions)
 

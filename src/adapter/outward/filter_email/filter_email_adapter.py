@@ -1,7 +1,9 @@
+from asyncio import to_thread
 import json
 from dotenv import load_dotenv
 from typing import List
 from google.cloud import bigquery
+from google.cloud.bigquery.job import QueryJob
 from src.adapter.outward.filter_email.query_builder import QueryBuilder
 from src.app.domain.entity.email import Attachment, Email
 from src.app.port.outward.filter_email.filter_email_command import FilterEmailCommand
@@ -41,6 +43,9 @@ class FilterEmailAdapter(FilterEmailPort):
             )
         return result_emails
 
+    async def async_query(self, query, query_job_config) -> QueryJob:
+        return await to_thread(self.client.query, query, job_config=query_job_config)
+
     async def filter_email(self, command: FilterEmailCommand) -> List[Email]:
         try:
             query, params = await self.query_builder.build_query(command)
@@ -50,7 +55,7 @@ class FilterEmailAdapter(FilterEmailPort):
                     for key in params
                 ]
             )
-            query_job = self.client.query(query, job_config=query_job_config)
+            query_job = await self.async_query(query, query_job_config)
             rows = list(query_job.result())
             result_emails = await self.__generate_result_emails(rows)
             return result_emails
