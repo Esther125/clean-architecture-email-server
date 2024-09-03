@@ -31,6 +31,6 @@ steps:
 
 substitutions:
   _CLOUDSDK_COMPUTE_ZONE: 'asia-east1-a'
-  _CLOUDSDK_CONTAINER_CLUSTER: 'email-server-cluster-1'
+  _CLOUDSDK_CONTAINER_CLUSTER: 'email-server-cluster'
 options:
   logging: CLOUD_LOGGING_ONLY
