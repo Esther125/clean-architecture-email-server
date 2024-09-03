@@ -1,14 +1,21 @@
 apiVersion: "autoscaling/v2"
 kind: "HorizontalPodAutoscaler"
 metadata:
-  name: "email-server-deployment-1-hpa-t8fw"
-  namespace: "email-server"
+  name: "email-server-deployment-hpa-21pa"
+  namespace: "my-email-server"
   labels:
-    app: "email-server-deployment-1"
+    app: "email-server-deployment"
 spec:
   scaleTargetRef:
     kind: "Deployment"
-    name: "email-server-deployment-1"
+    name: "email-server-deployment"
     apiVersion: "apps/v1"
   minReplicas: 1
   maxReplicas: 5
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      target:
+        type: "Utilization"
+        averageUtilization: 80
