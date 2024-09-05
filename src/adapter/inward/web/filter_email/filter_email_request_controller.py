@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from dependency_injector.wiring import inject, Provide
 from pydantic import EmailStr
 
-from src.adapter.inward.web.filter_email.filter_email_schema import (
+from src.adapter.inward.web.filter_email.filter_email_request_schema import (
     Attachment,
     Email,
     FilterEmailResponse,
@@ -41,7 +41,7 @@ async def handle_filter_email_request(
     receivers: Optional[EmailStr] = Query(None),
     subject: Optional[str] = Query(None),
     content: Optional[str] = Query(None),
-    attachments_blobname: Optional[str] = Query(None),
+    attachments_keyword: Optional[str] = Query(None),
     filter_email_request_service: FilterEmailRequestUseCase = Depends(
         Provide[Container.filter_email_request_service]
     ),
@@ -57,7 +57,7 @@ async def handle_filter_email_request(
             receivers=receivers,
             subject=subject,
             content=content,
-            attachments_blobname=attachments_blobname,
+            attachments_keyword=attachments_keyword,
         )
         emails = await filter_email_request_service.filter_email_request(
             filter_email_request_command

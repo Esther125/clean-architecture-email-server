@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from unittest import IsolatedAsyncioTestCase, mock
-from src.adapter.outward.filter_email.filter_email_adpter import FilterEmailAdapter
+from src.adapter.outward.filter_email.filter_email_adapter import FilterEmailAdapter
 from src.app.domain.service.filter_email_request.filter_email_request import (
     FailedToFilterEmail,
     FilterEmailRequestService,

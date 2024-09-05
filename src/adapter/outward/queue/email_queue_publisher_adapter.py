@@ -2,7 +2,7 @@ import json
 import os
 import logging
 from dotenv import load_dotenv
-from google.cloud import pubsub_v1
+from google.cloud.pubsub_v1 import PublisherClient
 
 from src.app.port.outward.queue_email.queue_email_command import QueueEmailCommand
 from src.app.port.outward.queue_email.queue_email_port import QueueEmailPort
@@ -16,7 +16,7 @@ class EmailQueuePublisherAdapter(QueueEmailPort):
     def __init__(self) -> None:
         self.project_id = os.getenv("GCP_PROJECT_ID")
         self.topic_id = os.getenv("GCP_PUB_SUB_TOPIC_ID")
-        self.publisher = pubsub_v1.PublisherClient()
+        self.publisher = PublisherClient()
         self.topic_path = self.publisher.topic_path(self.project_id, self.topic_id)
 
     def generate_email_message(self, command: QueueEmailCommand) -> bytes:
