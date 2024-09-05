@@ -62,15 +62,6 @@ async def handle_filter_email_request(
         emails = await filter_email_request_service.filter_email_request(
             filter_email_request_command
         )
-        attachments_list = [
-            Attachment(
-                filename=attachment.filename,
-                filetype=attachment.filetype,
-                blobname=attachment.blobname,
-            )
-            for email in emails
-            for attachment in email.attachments
-        ]
         result_emails = [
             Email(
                 email_id=email.email_id,
@@ -80,7 +71,14 @@ async def handle_filter_email_request(
                 receivers=email.receivers,
                 subject=email.subject,
                 content=email.content,
-                attachments=attachments_list,
+                attachments=[
+                    Attachment(
+                        filename=attachment.filename,
+                        filetype=attachment.filetype,
+                        blobname=attachment.blobname,
+                    )
+                    for attachment in email.attachments
+                ],
             )
             for email in emails
         ]

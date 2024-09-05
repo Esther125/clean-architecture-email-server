@@ -72,7 +72,7 @@ async def handle_send_and_update_email_state_request(
         await send_and_update_email_state_service.send_and_update_email_state(
             send_and_update_email_state_command
         )
-
+        logger.info("Successfully send and update email state.")
         return SendEmailResponse(
             message="Successfully send and update email state.",
             email_id=queue_request.email_id,
