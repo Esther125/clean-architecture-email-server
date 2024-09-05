@@ -61,6 +61,10 @@ ngrok config add-authtoken [YOUR_AUTHTOKEN_HERE]
 # Expose port 8080
 ngrok http 8080
 ```
+You will receive a URL starting with https (e.g., https://xxx-xxx.ngrok-free.app). Copy this URL and use it as the Pub/Sub subscription endpoint url with the following format:
+https://xxx-xxx.ngrok-free.app/v1/queue-email-request
+
+
 
 ### Authenticate using a service account
 Authenticate with Google Cloud to enable secure interactions with GCP services by running the following command:
