@@ -18,7 +18,7 @@ class StorageClient:
         try:
             attachment = self.attachment_bucket.blob(blob_name)
             logger.info(
-                "Successfully download the attachment from Cloud Storage. (Blobname: {blob_name})"
+                f"Successfully download the attachment from Cloud Storage. (Blobname: {blob_name})"
             )
             return attachment.download_as_bytes()
         except Exception as error:
