@@ -1,4 +1,4 @@
-# clean-architecture-email-serve
+# clean-architecture-email-server
 
 
 ## System Design Diagram
