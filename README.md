@@ -1,4 +1,4 @@
-# milecoolab-email-server
+# clean-architecture-email-serve
 
 
 ## System Design Diagram
