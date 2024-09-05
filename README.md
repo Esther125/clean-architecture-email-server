@@ -15,7 +15,7 @@ Ensure the following prerequisites are met for smooth operation:
   - Pub/Sub
   - Firestore
   - [Stream Firestore to BigQuery extension](https://extensions.dev/extensions/firebase/firestore-bigquery-export)
-  - BigQuery (For schema transformation methods from Firestore to BigQuery, please refer to [Schema Transformation from Firestore to BigQuery](./docs/email_data_view.sql))
+  - BigQuery (For the schema used to build the view in BigQuery, please see the [View Schema](./bigquery/views/email_data_view.sql))
   - Cloud Storage
   - Cloud Build triggers (Please refer to the `./cloudbuild` folder for detailed configuration)
   - GKE clusters set up
