@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 from fastapi import APIRouter, HTTPException, Depends, Request
 from dependency_injector.wiring import inject, Provide
 
@@ -15,6 +16,9 @@ from src.app.port.inward.send_and_update_email_state.send_and_update_email_state
     SendAndUpdateEmailStateUseCase,
 )
 from src.container import Container
+
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(prefix="/v1")
@@ -33,7 +37,10 @@ async def parse_queue_resquest(request: Request) -> QueueRequestWebInterface:
 
 
 @router.post(
-    "/queue-email-request", status_code=200, summary="For queue to dequeue emails."
+    "/queue-email-request",
+    status_code=200,
+    summary="For queue to dequeue emails.",
+    include_in_schema=False,
 )
 @inject
 async def handle_send_and_update_email_state_request(
@@ -44,7 +51,6 @@ async def handle_send_and_update_email_state_request(
 ):
     try:
         queue_request = await parse_queue_resquest(request)
-
         attachments = []
         if queue_request.attachments is not None:
             attachments = [
@@ -66,12 +72,13 @@ async def handle_send_and_update_email_state_request(
         await send_and_update_email_state_service.send_and_update_email_state(
             send_and_update_email_state_command
         )
-
+        logger.info("Successfully send and update email state.")
         return SendEmailResponse(
             message="Successfully send and update email state.",
             email_id=queue_request.email_id,
         )
     except Exception as error:
+        logger.error(f"Failed to send and update email state. Error: {error}")
         raise HTTPException(
             status_code=500,
             detail=f"Failed to send and update email state. Error: {error}",

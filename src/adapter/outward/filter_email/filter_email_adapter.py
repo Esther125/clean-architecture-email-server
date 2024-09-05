@@ -22,7 +22,8 @@ class FilterEmailAdapter(FilterEmailPort):
         result_emails = []
         for row in rows:
             receivers_list = json.loads(row["receivers"])
-            attachments_list = json.loads(row["attachments"])
+            if row["attachments"] is not None:
+                attachments_list = json.loads(row["attachments"])
             result_emails.append(
                 Email(
                     email_id=row["email_id"],
@@ -39,6 +40,7 @@ class FilterEmailAdapter(FilterEmailPort):
                             blobname=attachment["blobname"],
                         )
                         for attachment in attachments_list
+                        if row["attachments"] is not None
                     ],
                 )
             )
@@ -50,12 +52,15 @@ class FilterEmailAdapter(FilterEmailPort):
     async def filter_email(self, command: FilterEmailCommand) -> List[Email]:
         try:
             query, params = await self.query_builder.build_query(command)
-            query_job_config = bigquery.QueryJobConfig(
-                query_parameters=[
-                    bigquery.ScalarQueryParameter(key, "STRING", params[key])
-                    for key in params
-                ]
-            )
+            if params:
+                query_job_config = bigquery.QueryJobConfig(
+                    query_parameters=[
+                        bigquery.ScalarQueryParameter(key, "STRING", params[key])
+                        for key in params
+                    ]
+                )
+            else:
+                query_job_config = bigquery.QueryJobConfig()
             query_job = await self.async_query(query, query_job_config)
             rows = list(query_job.result())
             result_emails = await self.__generate_result_emails(rows)

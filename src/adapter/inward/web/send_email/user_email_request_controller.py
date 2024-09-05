@@ -1,3 +1,4 @@
+import logging
 import uuid
 from fastapi import APIRouter, HTTPException, Depends
 from dependency_injector.wiring import inject, Provide
@@ -14,6 +15,9 @@ from src.app.port.inward.queue_and_save_email.queue_and_save_email_use_case impo
     QueueAndSaveEmailUseCase,
 )
 from src.container import Container
+
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(prefix="/v1")
@@ -57,6 +61,7 @@ async def handle_queue_and_save_email_request(
             message="Successfully queue and save email.", email_id=email_id
         )
     except Exception as error:
+        logger.error(f"Failed to queue and save email. Error: {error}")
         raise HTTPException(
             status_code=500, detail=f"Failed to queue and save email. Error: {error}"
         )

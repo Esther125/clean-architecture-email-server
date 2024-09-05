@@ -6,7 +6,8 @@ from src.adapter.outward.send_email.email_message_builder import EmailMessageBui
 from src.app.port.outward.send_email.send_email_command import SendEmailCommand
 from src.app.port.outward.send_email.send_email_port import SendEmailPort
 
-load_dotenv()
+
+load_dotenv(override=True)
 
 
 class SendEmailAdapter(SendEmailPort):

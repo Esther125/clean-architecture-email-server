@@ -47,7 +47,6 @@ class SendAndUpdateEmailStateService(SendAndUpdateEmailStateUseCase):
 
     async def update_email_state(self, command: SendAndUpdateEmailStateCommand) -> None:
         try:
-            # Update `is_sent` attribute to True if sent successfully
             update_state_command = UpdateEmailStateCommand(
                 email_id=command.email_id, is_sent=True
             )
