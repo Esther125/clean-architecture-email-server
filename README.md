@@ -18,7 +18,17 @@ Ensure the following prerequisites are met for smooth operation:
   - BigQuery (For the schema used to build the view in BigQuery, please see the [View Schema](./bigquery/views/email_data_view.sql))
   - Cloud Storage
   - Cloud Build triggers (Please refer to the `./cloudbuild` folder for detailed configuration)
-  - GKE clusters set up (The default cluster name is `email-server-cluster`. If you want to change the cluster name, change the substitution field in this [file](./cloudbuild/cloudbuild_on_push_dev.yaml))
+  - GKE cluster set up 
+
+    ```shell
+    # Command for creating a GKE cluster
+    gcloud container clusters create "email-server-cluster" \
+        --zone "asia-east1-a" \
+        --machine-type "e2-micro" \
+        --service-account "email-server@tw-rd-de-milecoolab-dev.iam.gserviceaccount.com" \
+        --num-nodes "3"
+    ```
+    (The default cluster name is `email-server-cluster`. If you want to change the cluster name, change the substitution field in this [file](./cloudbuild/cloudbuild_on_push_dev.yaml))
 
 - **Environment Variables**: Copy `example.env`, fill in all the variable names, and rename the file to `.env`.
 
