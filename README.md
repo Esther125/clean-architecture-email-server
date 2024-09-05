@@ -52,6 +52,16 @@ poetry shell
 poetry install
 ```
 
+#### Expose Port for Pub/Sub
+To expose a local port, first download [ngrok](https://ngrok.com/) and create an account to obtain your Authtoken. Then, use the following commands to authenticate your ngrok client and expose the desired port:
+```shell
+# Authenticate
+ngrok config add-authtoken [YOUR_AUTHTOKEN_HERE]
+
+# Expose port 8080
+ngrok http 8080
+```
+
 ### Authenticate using a service account
 Authenticate with Google Cloud to enable secure interactions with GCP services by running the following command:
 
