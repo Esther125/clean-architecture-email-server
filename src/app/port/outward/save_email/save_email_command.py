@@ -3,30 +3,23 @@ from typing import List, Optional
 
 from pydantic import EmailStr
 
-
-class Attachment:
-    def __init__(self, filename: str, filetype: str, blobname: str):
-        self.filename = filename
-        self.filetype = filetype
-        self.blobname = blobname
+from src.app.domain.entity.email import Attachment
 
 
-class Email:
+class SaveEmailCommand:
     def __init__(
         self,
         email_id: str,
-        is_sent: bool,
         request_time: datetime,
-        sent_time: datetime | None,
         receivers: List[EmailStr],
         subject: str,
         content: str,
         attachments: Optional[List[Attachment]] = None,
     ):
         self.__email_id = email_id
-        self.__is_sent = is_sent
+        self.__is_sent = False
         self.__request_time = request_time
-        self.__sent_time = sent_time
+        self.__sent_time = None
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
@@ -39,10 +32,6 @@ class Email:
     @property
     def is_sent(self) -> bool:
         return self.__is_sent
-
-    @is_sent.setter
-    def is_sent(self, is_sent: bool):
-        self.__is_sent = is_sent
 
     @property
     def request_time(self) -> datetime:

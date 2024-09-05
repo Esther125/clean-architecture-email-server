@@ -1,0 +1,47 @@
+{
+	"info": {
+		"_postman_id": "d0c35b0f-5473-439c-a19a-9066ff0c71a7",
+		"name": "email-server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27275266"
+	},
+	"item": [
+		{
+			"name": "filter email request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "user send email request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"receivers\": [\"friday50523@gmail.com\"],\n  \"subject\": \"Hello, World!\",\n  \"content\": \"This is a test email to demonstrate JSON structure.\",\n  \"attachments\": [\n    {\n      \"filename\": \"example.rtf\",\n      \"filetype\": \"application/rtf\",\n      \"blobname\": \"example.rtf\"\n    }\n  ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/user-email-request",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"user-email-request"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

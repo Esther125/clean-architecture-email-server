@@ -1,0 +1,29 @@
+services:
+  server:
+    build:
+      context: .
+      target: development
+    ports:
+      - "8080:8080" 
+    volumes:
+      - .:/data
+    depends_on:
+      - emulator
+
+  emulator:
+    image: google/cloud-sdk:emulators
+    ports: 
+      - "8085:8085" # Pub/Sub
+      - "8081:8081" # Firestore
+    entrypoint: /bin/bash -c
+    command: >
+      "gcloud beta emulators pubsub start 
+      --project=${GCP_PROJECT_ID} 
+      --host-port='0.0.0.0:8085' & 
+      gcloud beta emulators firestore start 
+      --project=${GCP_PROJECT_ID} 
+      --host-port='0.0.0.0:8081' 
+      --quiet"
+
+
+  

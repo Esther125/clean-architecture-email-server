@@ -1,32 +1,19 @@
-from datetime import datetime
 from typing import List, Optional
-
 from pydantic import EmailStr
 
-
-class Attachment:
-    def __init__(self, filename: str, filetype: str, blobname: str):
-        self.filename = filename
-        self.filetype = filetype
-        self.blobname = blobname
+from src.app.domain.entity.email import Attachment
 
 
-class Email:
+class SendAndUpdateEmailStateCommand:
     def __init__(
         self,
         email_id: str,
-        is_sent: bool,
-        request_time: datetime,
-        sent_time: datetime | None,
         receivers: List[EmailStr],
         subject: str,
         content: str,
         attachments: Optional[List[Attachment]] = None,
     ):
         self.__email_id = email_id
-        self.__is_sent = is_sent
-        self.__request_time = request_time
-        self.__sent_time = sent_time
         self.__receivers = receivers
         self.__subject = subject
         self.__content = content
@@ -35,22 +22,6 @@ class Email:
     @property
     def email_id(self) -> str:
         return self.__email_id
-
-    @property
-    def is_sent(self) -> bool:
-        return self.__is_sent
-
-    @is_sent.setter
-    def is_sent(self, is_sent: bool):
-        self.__is_sent = is_sent
-
-    @property
-    def request_time(self) -> datetime:
-        return self.__request_time
-
-    @property
-    def sent_time(self) -> datetime | None:
-        return self.__sent_time
 
     @property
     def receivers(self) -> List[EmailStr]:

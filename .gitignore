@@ -1,2 +1,5 @@
 /venv
 *.cpython*
+.env
+six*
+app.log
