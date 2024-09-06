@@ -67,6 +67,12 @@ https://xxx-xxx.ngrok-free.app/v1/queue-email-request
 
 
 ### Authenticate using a service account
+Switch to email server GCP project.
+```
+gcloud config set project tw-rd-de-milecoolab-dev
+```
+
+
 Authenticate with Google Cloud to enable secure interactions with GCP services by running the following command:
 
 ```
