@@ -2,11 +2,11 @@
 
 This project is an email server designed using the principles of clean architecture and clean code. It features a variety of filters such as sender, time, and status, enabling efficient and organized email management.
 
-<iframe width="560" height="315" src="https://youtu.be/pYIccgb8Rsk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+![Demo GIF](./assets/email-server-demo.gif)
 
 ## System Design Diagram
 
-![Example Image](./images/system_design_diagram.png)
+![System Design Diagram](./assets/system_design_diagram.png)
 
 ## Server Setup
 
