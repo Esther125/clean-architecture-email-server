@@ -3,6 +3,7 @@
 This project is an email server designed using the principles of clean architecture and clean code. It features a variety of filters such as sender, time, and status, enabling efficient and organized email management.
 
 ![Demo GIF](./assets/email-server-demo.gif)
+If the GIF does not display, you can [watch the demo video on YouTube](https://youtu.be/pYIccgb8Rsk).
 
 ## System Design Diagram
 
@@ -132,6 +133,6 @@ We have provided a Postman collection for easier testing and interaction with ou
 
 Once the server is up and running, you can view the API documentation by visiting the following URL: http://127.0.0.1:8080/docs
 
-### Documents
+## Documents
 
 For detailed design and planning documentation, please refer to the [Document](./docs/document.pdf).
