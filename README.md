@@ -1,6 +1,6 @@
 # clean-architecture-email-server
 
-This project is an email server designed using the principles of clean architecture and clean code. It features a variety of filters such as sender, time, and status, enabling efficient and organized email management.
+This project is an email server designed using the principles of clean architecture and clean code. It enables users to customize email content and attach files. The server includes a variety of filters such as is_sent, receiver, and time, enhancing the management and tracking of emails.
 
 ![Demo GIF](./assets/email-server-demo.gif)
 If the GIF does not display, you can [watch the demo video on YouTube](https://youtu.be/pYIccgb8Rsk).
