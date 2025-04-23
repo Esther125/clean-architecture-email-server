@@ -9,6 +9,10 @@ If the GIF does not display, you can [watch the demo video on YouTube](https://y
 
 ![System Design Diagram](./assets/system_design_diagram.png)
 
+## CI/CD pipeline
+
+![CI/CD pipeline](./assets/CICD-pipeline.png)
+
 ## Server Setup
 
 ### Prerequisities
